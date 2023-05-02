@@ -1,0 +1,147 @@
+diff --git a/node_modules/react-native-material-textfield/.babelrc b/node_modules/react-native-material-textfield/.babelrc
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/.codeclimate.yml b/node_modules/react-native-material-textfield/.codeclimate.yml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/.eslintrc b/node_modules/react-native-material-textfield/.eslintrc
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/.npmignore b/node_modules/react-native-material-textfield/.npmignore
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/.travis.yml b/node_modules/react-native-material-textfield/.travis.yml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/index.js b/node_modules/react-native-material-textfield/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/license.txt b/node_modules/react-native-material-textfield/license.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/readme.md b/node_modules/react-native-material-textfield/readme.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/affix/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/affix/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/affix/index.js b/node_modules/react-native-material-textfield/src/components/affix/index.js
+index d6c9d64..fe8eb0a 100644
+--- a/node_modules/react-native-material-textfield/src/components/affix/index.js
++++ b/node_modules/react-native-material-textfield/src/components/affix/index.js
+@@ -1,6 +1,6 @@
+ import PropTypes from 'prop-types';
+ import React, { PureComponent } from 'react';
+-import { Animated } from 'react-native';
++import { Animated, Text } from 'react-native';
+ 
+ import styles from './styles';
+ 
+@@ -24,7 +24,7 @@ export default class Affix extends PureComponent {
+     baseColor: PropTypes.string.isRequired,
+     animationDuration: PropTypes.number.isRequired,
+ 
+-    style: Animated.Text.propTypes.style,
++    style: Text.propTypes.style,
+ 
+     children: PropTypes.oneOfType([
+       PropTypes.arrayOf(PropTypes.node),
+diff --git a/node_modules/react-native-material-textfield/src/components/affix/styles.js b/node_modules/react-native-material-textfield/src/components/affix/styles.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/affix/test.js b/node_modules/react-native-material-textfield/src/components/affix/test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/counter/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/counter/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/counter/index.js b/node_modules/react-native-material-textfield/src/components/counter/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/counter/styles.js b/node_modules/react-native-material-textfield/src/components/counter/styles.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/counter/test.js b/node_modules/react-native-material-textfield/src/components/counter/test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/field/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/field/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/field/index.js b/node_modules/react-native-material-textfield/src/components/field/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/field/styles.js b/node_modules/react-native-material-textfield/src/components/field/styles.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/field/test.js b/node_modules/react-native-material-textfield/src/components/field/test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/helper/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/helper/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/helper/index.js b/node_modules/react-native-material-textfield/src/components/helper/index.js
+index 60184ea..84e6e3a 100644
+--- a/node_modules/react-native-material-textfield/src/components/helper/index.js
++++ b/node_modules/react-native-material-textfield/src/components/helper/index.js
+@@ -1,6 +1,6 @@
+ import PropTypes from 'prop-types';
+ import React, { PureComponent } from 'react';
+-import { View, Animated } from 'react-native';
++import { View, Animated, Text } from 'react-native';
+ 
+ import styles from './styles';
+ 
+@@ -10,7 +10,7 @@ export default class Helper extends PureComponent {
+   };
+ 
+   static propTypes = {
+-    style: Animated.Text.propTypes.style,
++    style: Text.propTypes.style,
+     children: PropTypes.oneOfType([
+       PropTypes.arrayOf(PropTypes.node),
+       PropTypes.node,
+diff --git a/node_modules/react-native-material-textfield/src/components/helper/styles.js b/node_modules/react-native-material-textfield/src/components/helper/styles.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/helper/test.js b/node_modules/react-native-material-textfield/src/components/helper/test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/label/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/label/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/label/index.js b/node_modules/react-native-material-textfield/src/components/label/index.js
+index ac3ed53..bf551e3 100644
+--- a/node_modules/react-native-material-textfield/src/components/label/index.js
++++ b/node_modules/react-native-material-textfield/src/components/label/index.js
+@@ -1,6 +1,6 @@
+ import PropTypes from 'prop-types';
+ import React, { PureComponent } from 'react';
+-import { Animated } from 'react-native';
++import { Animated, Text } from 'react-native';
+ 
+ export default class Label extends PureComponent {
+   static defaultProps = {
+@@ -29,7 +29,7 @@ export default class Label extends PureComponent {
+ 
+     animationDuration: PropTypes.number.isRequired,
+ 
+-    style: Animated.Text.propTypes.style,
++    style: Text.propTypes.style,
+ 
+     children: PropTypes.oneOfType([
+       PropTypes.arrayOf(PropTypes.node),
+diff --git a/node_modules/react-native-material-textfield/src/components/label/test.js b/node_modules/react-native-material-textfield/src/components/label/test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/line/__snapshots__/test.js.snap b/node_modules/react-native-material-textfield/src/components/line/__snapshots__/test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/line/index.js b/node_modules/react-native-material-textfield/src/components/line/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/line/styles.js b/node_modules/react-native-material-textfield/src/components/line/styles.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/react-native-material-textfield/src/components/line/test.js b/node_modules/react-native-material-textfield/src/components/line/test.js
+old mode 100644
+new mode 100755

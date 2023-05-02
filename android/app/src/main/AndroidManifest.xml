@@ -1,0 +1,121 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  
+  android:targetSandboxVersion="1"
+  xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <!-- <uses-permission android:name = "android.permission.FOREGROUND_SERVICE"/> -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/> 
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
+
+    <application
+      android:usesCleartextTraffic="true"
+      android:name=".MainApplication"
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:allowBackup="true"
+      android:theme="@style/SplashTheme"
+      android:largeHeap="true"
+      android:requestLegacyExternalStorage="true"
+      >
+      
+      <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="adjustResize"
+        android:exported="true"
+      >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+        </intent-filter>
+      </activity>
+      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <!-- <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyABRrVCGnFHr6UT-ZvJIDNXr2N1cOR6wgQ"
+      /> -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyAQWRlgNf6yj_0cQtYedslXUrtbl2YUXwc"
+      />
+      <meta-data
+        tools:replace="android:value"
+        android:name="com.google.firebase.messaging.default_notification_channel_id"
+        android:value="AIzaSyACOEa2rUNn7sIpgvBZoFAkxx2X8QkKoxU" 
+      />
+    
+      <!-- Change the value to true to enable pop-up for in foreground on receiving remote notifications (for prevent duplicating while showing local notifications set this to false) -->
+      <meta-data  
+        android:name="com.dieam.reactnativepushnotification.notification_foreground"
+        android:value="false"
+      />
+      <!-- Change the resource name to your App's accent color - or any other color you want -->
+      <meta-data  
+        android:name="com.dieam.reactnativepushnotification.notification_color"
+        android:resource="@color/white"
+      /> <!-- or @android:color/{name} to use a standard color -->
+      <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions" android:exported="true" />
+      <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" android:exported="true" />
+      <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver" android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+        </intent-filter>
+      </receiver>
+
+      <!-- <receiver 
+        android:name = "com.reactnativepedometerdetails.step.background.RebootActionReceiver"
+        android:exported = "false"
+      >
+        <intent-filter >
+          <action android:name = "android.intent.action.BOOT_COMPLETED"/>
+        </intent-filter>
+      </receiver>
+      <receiver
+        android:name = "com.reactnativepedometerdetails.step.background.Restarter"
+        android:enabled = "true"
+        android:exported = "true"
+        android:permission = "false"
+      >
+        <intent-filter>
+          <action android:name = "restartservice" />
+        </intent-filter>
+      </receiver>
+      <service
+        android:name="com.reactnativepedometerdetails.step.background.StepCounterService"
+        android:enabled = "true"
+        android:exported = "false" 
+      /> -->
+      
+    </application>
+    <queries>
+      <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <!-- If you don't know the MIME type in advance, set "mimeType" to "*/*". -->
+        <data android:mimeType="application/pdf" />
+      </intent>
+    </queries>
+
+    <queries>
+      <package android:name="com.google.android.apps.fitness" />
+    </queries>
+</manifest>
