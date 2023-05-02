@@ -15,6 +15,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [GMSServices provideAPIKey:@"AIzaSyABRrVCGnFHr6UT-ZvJIDNXr2N1cOR6wgQ"];
   [FIRApp configure];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   self.moduleName = @"xenia";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
