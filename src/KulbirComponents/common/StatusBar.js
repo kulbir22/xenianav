@@ -11,14 +11,15 @@ class IOS_StatusBar extends Component {
     render(){
         const {color = ['#039FFD', '#EA304F'], barStyle, hidden = false} = this.props;
         return (
-            <View>
-                <Gradient 
-                    start={{x: 0, y: 0}} end={{x: 1, y: 0}}
-                    colors={color}
-                    style={{height: getStatusBarHeight(true)}}>
-                    <StatusBar hidden={hidden} barStyle={barStyle} />
-                </Gradient>
-            </View>
+            // <View>
+            //     <Gradient 
+            //         start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+            //         colors={color}
+            //         style={{height: getStatusBarHeight(true)}}>
+            //         <StatusBar hidden={hidden} barStyle={barStyle} />
+            //     </Gradient>
+            // </View>
+            <StatusBar backgroundColor={'transparent'} barStyle={'light-content'} translucent={true}/>
         );
     }
 }

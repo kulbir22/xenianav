@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {PDFDocument, PDFPage} from 'react-native-pdf-lib';
 import RNFS, { stat } from 'react-native-fs';
 import moment from 'moment';
-import { LinearTextGradient } from 'react-native-text-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 import {Dropdown} from 'react-native-material-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

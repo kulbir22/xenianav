@@ -22,7 +22,6 @@ import {
 } from 'react-native-card-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
-import RNPickerSelect from 'react-native-picker-select';
 import Button from 'react-native-button';
 import LeftSide from '../Image/side.png';
 import RightSide from '../Image/side2.png';

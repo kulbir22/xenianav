@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Alert, PermissionsAndroid, Image, StyleSheet, Text,
     TouchableOpacity, View, KeyboardAvoidingView, Keyboard, Dimensions,
-    TextInput, BackHandler, PixelRatio
+    TextInput, BackHandler, PixelRatio, Platform, Linking
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,12 +11,12 @@ import DeviceInfo from 'react-native-device-info';
 import ImagePicker from 'react-native-image-picker';
 import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import LinearGradient from 'react-native-linear-gradient';
-import MapView, {PROVIDER_GOOGLE, PROVIDER_DEFAULT} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 //import Geolocation from '@react-native-community/geolocation';
 import Geolocation from 'react-native-geolocation-service';
 import Utils from '../Utils';
 import {extractBaseURL} from '../api/BaseURL';
-import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft} from '../KulbirComponents/common/';
+import {getWidthnHeight, ModalAlert, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft} from '../KulbirComponents/common/';
 import { cameraFile, setReloadHome } from '../store/redux/reducer';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -75,7 +75,8 @@ const LONGITUDE_DELTA = 0.00421;
                 },
                 allError: function(){
                     return (this.fileError === false && this.Lat_LongError === false && this.commentError === false)
-                }
+                },
+                iOSAlert: false
             };
             this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
 
@@ -150,7 +151,21 @@ const LONGITUDE_DELTA = 0.00421;
             })
         }
 
-        askPermissions(context) {
+        async hasPermissionIOS (){
+            const status = await Geolocation.requestAuthorization('whenInUse');
+    
+            if (status === 'granted') {
+                return true;
+            }
+    
+            if ((status === 'disabled' || status === 'denied') && !this.state.iOSAlert) {
+                this.setState({iOSAlert: true});
+            }
+    
+            return false;
+        };
+
+        async askPermissions(context) {
             //Checking for the permission just after component loaded
             async function requestLocationPermission() {
                 console.log('requestLocationPermission');
@@ -213,6 +228,12 @@ const LONGITUDE_DELTA = 0.00421;
             if (Utils.isAndroid()) {
                 //Calling the permission function
                 requestLocationPermission();
+            }
+            if(Platform.OS === "ios"){
+                const hasPermission = await this.hasPermissionIOS();
+                if(!hasPermission){
+                    return;
+                }
             }
         }
 
@@ -339,7 +360,13 @@ const LONGITUDE_DELTA = 0.00421;
             }
         }
 
-        findCoordinates = (call = false) => {
+        async findCoordinates(call = false) {
+            if(Platform.OS === "ios"){
+                const hasPermission = await this.hasPermissionIOS();
+                if(!hasPermission){
+                    return;
+                }
+            }
             Geolocation.getCurrentPosition(
                 (position) => {
                     const latitude = JSON.stringify(position.coords.latitude);
@@ -356,7 +383,7 @@ const LONGITUDE_DELTA = 0.00421;
                         this.setState({latitude: latitude, longitude: longitude, Lat_LongError: false}, () => {
                             const { details } = this.props.route.params;
                             console.log("FIND COORDINATES: ", this.state.latitude, this.state.longitude)
-                            if(details.office_latitude && details.office_longitude){
+                            if(!!details.office_latitude && !!details.office_longitude){
                                 this.calculateDistance(this.state.latitude, this.state.longitude);
                             }else{
                                 this.hideLoader();
@@ -497,14 +524,14 @@ const LONGITUDE_DELTA = 0.00421;
                                         showsCompass={true}
                                         toolbarEnabled={true}
                                     >
-                                        <MapView.Marker
+                                        <Marker
                                             coordinate={region}
                                             title={name}
                                             description={"YOUR LOCATION FOR ATTENDANCE"}
                                         />
                                     </MapView>
                                 </View>
-                                {Boolean(this.state.latitude && this.state.longitude) &&
+                                {(!!this.state.latitude && !!this.state.longitude) &&
                                     <View style={[{flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(90)]}>
                                         <Text style={{fontSize: 10}}>{`LATTITUDE: ${parseFloat(this.state.latitude).toFixed(3)}`}</Text>
                                         <Text style={{fontSize: 10}}>{`LONGITUDE: ${parseFloat(this.state.longitude).toFixed(3)}`}</Text>
@@ -567,6 +594,15 @@ const LONGITUDE_DELTA = 0.00421;
                             }
                         </View>
                     </View>
+                    <ModalAlert 
+                        isVisible={this.state.iOSAlert}
+                        onDismiss={() => {
+                            Linking.openSettings().catch(() => {
+                                Alert.alert('Unable to open settings');
+                            });
+                            this.props.navigation.goBack();
+                        }}
+                    />
                 </KeyboardAvoidingView>
                 </View>
                 );

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Text, View, TouchableOpacity, Image, TextInput, Dimensions, ScrollView, Alert, ActivityIndicator} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-import { LinearTextGradient } from 'react-native-text-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 import {Dropdown} from 'react-native-material-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

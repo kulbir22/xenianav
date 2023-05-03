@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, Platform} from 'react-native';
-import { LinearTextGradient } from 'react-native-text-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { getWidthnHeight, fontSizeH4 } from './width';
@@ -11,16 +10,7 @@ const GradientText = ({
     const {linearStyle} = styles;
     return (
         <View>
-            <LinearTextGradient
-                style={[linearStyle, style]}
-                useViewFrame={true}
-                locations={[0, 1]}
-                colors={gradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0.7, y: 0 }}
-            >
-                <Text>{title}</Text>
-            </LinearTextGradient>
+            <Text>{title}</Text>
         </View>
     );
 };

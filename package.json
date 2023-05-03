@@ -8,8 +8,9 @@
     "start": "react-native start",
     "launch-ios": "react-native run-ios --device=\"iPhone\"",
     "test": "jest",
-    "postinstall": "npx patch-package",
-    "create-android-bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
+    "postinstall": "npx patch-package; npx react-native setup-ios-permissions; npx pod-install",
+    "create-android-bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "clear-derived-data": "sudo rm -rf ~/Library/Developer/Xcode/DerivedData"
   },
   "reactNativePermissionsIOS": [
     "Camera",
@@ -57,7 +58,6 @@
     "react-native-awesome-alert": "^0.4.5",
     "react-native-background-downloader": "^2.3.4",
     "react-native-button": "^3.0.1",
-    "react-native-calendar-picker": "^7.1.4",
     "react-native-camera": "^4.2.1",
     "react-native-card-view": "0.0.3",
     "react-native-check-box": "^2.1.7",
@@ -67,7 +67,6 @@
     "react-native-device-info": "^10.6.0",
     "react-native-dimension": "^1.0.6",
     "react-native-document-picker": "^8.2.0",
-    "react-native-dropdown-picker": "^5.4.6",
     "react-native-easy-select": "^1.4.2",
     "react-native-elements": "^3.4.3",
     "react-native-exit-app": "^1.1.0",
@@ -94,7 +93,6 @@
     "react-native-pager-view": "^6.2.0",
     "react-native-pdf-lib": "^1.0.0",
     "react-native-permissions": "^3.0.0",
-    "react-native-picker-select": "^8.0.4",
     "react-native-popup-dialog": "^0.18.3",
     "react-native-pull-to-refresh": "^2.1.3",
     "react-native-push-notification": "^8.1.1",
@@ -116,7 +114,6 @@
     "react-native-swipeable": "^0.6.0",
     "react-native-switch": "^2.0.0",
     "react-native-tab-view": "^3.5.1",
-    "react-native-text-gradient": "^0.1.7",
     "react-native-text-ticker": "^1.5.0",
     "react-native-textinput-effects": "^0.6.1",
     "react-native-vector-icons": "^9.2.0",

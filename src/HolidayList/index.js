@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, FlatList, StyleSheet, Platform, StatusBar } from 'react-native';
+import { SafeAreaView, View, Text, Alert, FlatList, StyleSheet, Platform, StatusBar } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { Picker } from '@react-native-picker/picker';
+import { Picker, PickerIOS } from '@react-native-picker/picker';
 import moment from 'moment';
 import axios from 'axios';
-import { WaveHeader, Spinner, fontSizeH4, getWidthnHeight, getMarginTop, GradientBox, getMarginLeft, fontSizeH3 } from '../KulbirComponents/common';
+import { IOS_StatusBar, Spinner, fontSizeH4, getWidthnHeight, getMarginTop, GradientBox, getMarginLeft, fontSizeH3 } from '../KulbirComponents/common';
 import { extractBaseURL } from '../api/BaseURL';
 
 class HolidayList extends Component {
@@ -92,7 +92,7 @@ class HolidayList extends Component {
         let gradient = ['#039FFD', '#EA304F']
         return (
             <SafeAreaView style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
-                <StatusBar backgroundColor={gradient} barStyle="dark-content"/>
+                <IOS_StatusBar />
                 <View style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1, alignItems: 'center'}}>
                         <View 
@@ -102,8 +102,8 @@ class HolidayList extends Component {
                                 }, getMarginTop(3)
                             ]}
                         >
-                            {/* <YearPicker 
-                                style={[{backgroundColor: 'white', justifyContent: 'center'}, getWidthnHeight(70, 7)]}
+                            <Picker 
+                                style={[{backgroundColor: 'white', justifyContent: 'center'}, getWidthnHeight(70), Platform.OS === 'android' && {height: getWidthnHeight(undefined, 7).height}]}
                                 selectedValue={searchYear}
                                 onValueChange={(value, mainIndex) => {
                                     if(value){
@@ -116,13 +116,13 @@ class HolidayList extends Component {
                                     }
                                 }}
                             >
-                                <YearPicker.Item style={{color: '#C4C4C4'}} label={'Select Year'} value={null} />
+                                <Picker.Item style={{color: '#C4C4C4'}} label={'Select Year'} value={null} />
                                 {(options.map((item) => {
                                     return (
-                                        <YearPicker.Item label={`${item.year}`} value={`${item.year}`} />
+                                        <Picker.Item label={`${item.year}`} value={`${item.year}`} />
                                     );
                                 }))}
-                            </YearPicker> */}
+                            </Picker>
                         </View>
                         <View 
                             style={[{

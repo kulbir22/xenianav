@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ScrollView, View, Text, Animated, Easing, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { ScrollView, View, Text, Animated, Easing, TouchableOpacity, StyleSheet, Image, Alert, SafeAreaView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from 'react-redux';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "axios";
 import Gradient from 'react-native-linear-gradient';
 import { useDrawerStatus } from '@react-navigation/drawer';
@@ -39,7 +40,7 @@ function CustomDrawer(props) {
     const [ wish, setWish ] = useState('');
     const [ date, setDate] = useState(moment().format('DD/MM/YYYY'));
     const day = moment().format("dddd");
-
+    const { top } = useSafeAreaInsets();
     const reduxState = selector.reduxState;
     const parsedData = JSON.parse(reduxState.userObj);
     const empName = parsedData.success.user.employee.fullname;
@@ -516,7 +517,7 @@ function CustomDrawer(props) {
                 <Gradient 
                     start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                     colors={[COLOR1, COLOR2]}
-                    // style={[drawerMenuWidth]}
+                    style={[{paddingTop: top}]}
                 >
                     <ListItem containerStyle={{backgroundColor: 'transparent'}}>
                         <Avatar 

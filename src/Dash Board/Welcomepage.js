@@ -3,7 +3,8 @@ import {
     StyleSheet, Text, LayoutAnimation,
     TouchableOpacity, View, Image, SafeAreaView,
     Dimensions, Alert, Linking, TouchableWithoutFeedback,
-    Platform, BackHandler, Animated, Easing, FlatList
+    Platform, BackHandler, Animated, Easing, FlatList,
+    StatusBar
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connect } from 'react-redux';
@@ -812,6 +813,7 @@ class Welcomepage extends Component {
         return (
             <View style={{ flex: 1, backgroundColor: '#F8F3F3' }}>
                 <IOS_StatusBar color={gradient} barStyle="light-content" />
+                {/* <StatusBar backgroundColor={'transparent'} barStyle={'light-content'}/> */}
                 <SafeAreaView style={{ flex: 1 }}>
                     <View>
                         {/* {this.renderHeader()}  */}

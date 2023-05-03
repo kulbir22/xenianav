@@ -196,7 +196,7 @@ dependencies {
     //implementation "com.android.support:appcompat-v7:28.0.0"
     //implementation project(':@mauron85_react-native-background-geolocation')
     // implementation files('libs/mylib-release-1.13.aar')
-    implementation project(':bugsnag-react-native')
+    // implementation project(':bugsnag-react-native')
     //implementation project(':react-native-community-geolocation')
     implementation project(':react-native-push-notification')
     implementation project(':rn-fetch-blob')

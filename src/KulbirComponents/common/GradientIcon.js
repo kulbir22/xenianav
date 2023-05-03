@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, Platform} from 'react-native';
-import { LinearTextGradient } from 'react-native-text-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import IonIcons from 'react-native-vector-icons/Ionicons';

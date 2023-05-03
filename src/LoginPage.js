@@ -258,7 +258,7 @@ class LoginPage extends Component {
         this.setState({device_type : deviceInfo2}, () => {
             console.log('%^%^&&& DEVICE TYPE: ', deviceInfo2)
             if(Platform.OS === 'ios'){
-                this.checkiOSPermission().done();
+                this.checkiOSPermission();
             }else if(Platform.OS === 'android'){
                 this.requestUserPermission();
             }

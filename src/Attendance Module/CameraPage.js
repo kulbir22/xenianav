@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Alert, PermissionsAndroid, Image, PixelRatio, StyleSheet,
     Text, TouchableOpacity, View, KeyboardAvoidingView, Keyboard, Dimensions,
-    TextInput, BackHandler
+    TextInput, BackHandler, Linking, Platform
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {connect} from 'react-redux';
@@ -11,15 +11,16 @@ import ImagePicker from 'react-native-image-picker';
 import DeviceInfo from 'react-native-device-info';
 import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import LinearGradient from 'react-native-linear-gradient';
-import MapView, {PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 //import Geolocation from '@react-native-community/geolocation';
 import Geolocation from 'react-native-geolocation-service';
 import Utils from '../Utils';
 import {extractBaseURL} from '../api/BaseURL';
-import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft} from '../KulbirComponents/common/';
+import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft, ModalAlert} from '../KulbirComponents/common/';
 import { cameraFile, setReloadHome } from '../store/redux/reducer';
+import appConfig from '../../app.json';
 
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const LATITUDE_DELTA = 0.00922;
 const LONGITUDE_DELTA = 0.00421;
@@ -78,7 +79,8 @@ const LONGITUDE_DELTA = 0.00421;
                 },
                 allError: function(){
                   return (this.fileError === false && this.Lat_LongError === false && this.commentError === false)
-                }
+                },
+                iOSAlert: false
             };
             this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
         }
@@ -152,9 +154,23 @@ const LONGITUDE_DELTA = 0.00421;
         await extractBaseURL().then((baseURL) => {
             this.setState({baseURL}, () => console.log("EXTRACT LINK: ", this.state.baseURL))
         })
-    }  
+    } 
+    
+    async hasPermissionIOS (){
+		const status = await Geolocation.requestAuthorization('whenInUse');
 
-    askPermissions(context) {
+		if (status === 'granted') {
+			return true;
+		}
+
+		if ((status === 'disabled' || status === 'denied') && !this.state.iOSAlert) {
+            this.setState({iOSAlert: true});
+		}
+
+		return false;
+	};
+
+    async askPermissions(context) {
         //Checking for the permission just after component loaded
         async function requestLocationPermission() {
             try {
@@ -219,6 +235,12 @@ const LONGITUDE_DELTA = 0.00421;
         if (Utils.isAndroid()) {
             //Calling the permission function
             requestLocationPermission();
+        }
+        if(Platform.OS === "ios"){
+            const hasPermission = await this.hasPermissionIOS();
+            if(!hasPermission){
+                return;
+            }
         }
     }
 
@@ -353,13 +375,19 @@ const LONGITUDE_DELTA = 0.00421;
         }
     }
 
-    findCoordinates = (call = false) => {
+    async findCoordinates (call = false) {
+        if(Platform.OS === "ios"){
+            const hasPermission = await this.hasPermissionIOS();
+            if(!hasPermission){
+                return;
+            }
+        }
         Geolocation.getCurrentPosition(
             (position) => {
                 const latitude = JSON.stringify(position.coords.latitude);
                 const longitude = JSON.stringify(position.coords.longitude);
-                // console.log(latitude);
-                // console.log(longitude);
+                console.log("^&^&^ LATITUDE: ", latitude);
+                console.log("^&^&^ LONGITUDE: ", longitude);
                 if(call === true){
                     this.setState({latitude: null, longitude: null, Lat_LongError: true}, () => {
                         if(!this.state.latitude && !this.state.longitude){
@@ -370,7 +398,7 @@ const LONGITUDE_DELTA = 0.00421;
                     this.setState({latitude: latitude, longitude: longitude, Lat_LongError: false}, () => {
                         const { details } = this.props.route.params;
                         console.log("###FIND COORDINATES: ", this.state.latitude, this.state.longitude)
-                        if(details.office_latitude && details.office_longitude){
+                        if(!!details.office_latitude && !!details.office_longitude){
                             this.calculateDistance(this.state.latitude, this.state.longitude);
                         }else{
                             this.hideLoader();
@@ -381,6 +409,7 @@ const LONGITUDE_DELTA = 0.00421;
             },
             (error) => {
                 this.hideLoader();
+                console.log("#$#@#@ GEOLOCATION ERROR: ", error)
                 Alert.alert("Error !", error.message, [{
                     text: 'Go Back',
                     onPress: () => this.props.navigation.goBack()
@@ -430,7 +459,7 @@ const LONGITUDE_DELTA = 0.00421;
         const { navigation } = this.props;
         const animating = this.state.animating;
         const context=this;
-        const card = {card: {width: viewportWidth, height: viewportHeight}};
+        // const card = {card: {width: width, height: height}};
         var name = userName.fullname;
         // var  coordinate=;
         const latitude=this.state.latitude;
@@ -447,7 +476,7 @@ const LONGITUDE_DELTA = 0.00421;
         let gradientShadow = ['#0D4EBA', '#197EC4'];
         const circleWidth = getWidthnHeight(50)
         const circleHeight = {height: circleWidth.width}
-        console.log("###$$$ NAVIGATION: ", navigation)
+        console.log("###$$$ OFFICE LOCATION: ", details)
         return (
             <View>
                 <KeyboardAvoidingView behavior="position" style={styles.container}>
@@ -507,14 +536,14 @@ const LONGITUDE_DELTA = 0.00421;
                                         showsCompass={true}
                                         toolbarEnabled={true}
                                     >
-                                        <MapView.Marker
+                                        <Marker
                                             coordinate={region}
                                             title={name}
                                             description={"YOUR LOCATION FOR ATTENDANCE"}
                                         />
                                     </MapView>
                                 </View>
-                                {Boolean(this.state.latitude && this.state.longitude) &&
+                                {(!!this.state.latitude && !!this.state.longitude) &&
                                     <View style={[{flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(90)]}>
                                         <Text style={{fontSize: 10}}>{`LATTITUDE: ${parseFloat(this.state.latitude).toFixed(3)}`}</Text>
                                         <Text style={{fontSize: 10}}>{`LONGITUDE: ${parseFloat(this.state.longitude).toFixed(3)}`}</Text>
@@ -557,13 +586,6 @@ const LONGITUDE_DELTA = 0.00421;
                                     </View>
                                 </TouchableOpacity>
                             </View>
-                            <CommonModal 
-                                title="Something went wrong"
-                                subtitle= {`Error Code: ${errorCode}${apiCode}`}
-                                visible={this.state.commonModal}
-                                onDecline={this.onDecline.bind(this)}
-                                buttonColor={['#0E57CF', '#25A2F9']}
-                            />
                         </View>
                         <View 
                             style={[{
@@ -576,6 +598,15 @@ const LONGITUDE_DELTA = 0.00421;
                             }
                         </View>
                     </View>
+                    <ModalAlert 
+                        isVisible={this.state.iOSAlert}
+                        onDismiss={() => {
+                            Linking.openSettings().catch(() => {
+                                Alert.alert('Unable to open settings');
+                            });
+                            this.props.navigation.goBack();
+                        }}
+                    />
                 </KeyboardAvoidingView>
             </View>   
         )}
@@ -597,7 +628,7 @@ const LONGITUDE_DELTA = 0.00421;
             borderBottomRightRadius: 50
         },
         container: {
-            height:viewportHeight,
+            height:height,
             flex: 0,
             flexDirection: 'column',
             alignItems: 'center',
@@ -619,8 +650,8 @@ const LONGITUDE_DELTA = 0.00421;
             borderBottomWidth:1,
             borderRightWidth:1,
             borderLeftWidth:1,
-            width:viewportWidth,
-            height: viewportHeight / 3,
+            width:width,
+            height: height / 3,
         },
         MainContainer: {
             flex:0,
@@ -706,5 +737,4 @@ const LONGITUDE_DELTA = 0.00421;
         }
     }
 
-    const appComponent = (App);
-export default connect(mapStateToProps, {cameraFile, setReloadHome})(appComponent);
+export default connect(mapStateToProps, {cameraFile, setReloadHome})(App);

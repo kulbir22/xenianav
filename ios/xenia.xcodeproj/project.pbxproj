@@ -16,8 +16,23 @@
 		1876724E258C721800ED9AA8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1876724C258C721700ED9AA8 /* File.swift */; };
 		41564554493F7281AF667A78 /* Pods_xenia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A18D6B6723E380F2264DA566 /* Pods_xenia.framework */; };
 		9359B8E529FA90830082DD10 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189A76332940B8DB0026E188 /* HealthKit.framework */; };
-		9395846429FFF0A200197D3A /* xenia.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13B07F961A680F5B00A75B9A /* xenia.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		93EB538F29D9A8FF00DF2682 /* happy_bday.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 93EB538E29D9A8FF00DF2682 /* happy_bday.mp3 */; };
+		93F2B9B82A00FAC5000E4DE3 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B492429FD4BFD00A61FE0 /* AntDesign.ttf */; };
+		93F2B9B92A00FAC5000E4DE3 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491D29FD4BFD00A61FE0 /* Entypo.ttf */; };
+		93F2B9BA2A00FAC5000E4DE3 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491B29FD4BFD00A61FE0 /* EvilIcons.ttf */; };
+		93F2B9BB2A00FAC5000E4DE3 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B492129FD4BFD00A61FE0 /* Feather.ttf */; };
+		93F2B9BC2A00FAC5000E4DE3 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491F29FD4BFD00A61FE0 /* FontAwesome.ttf */; };
+		93F2B9BD2A00FAC5000E4DE3 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B492329FD4BFD00A61FE0 /* FontAwesome5_Brands.ttf */; };
+		93F2B9BE2A00FAC5000E4DE3 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491C29FD4BFD00A61FE0 /* FontAwesome5_Regular.ttf */; };
+		93F2B9BF2A00FAC5000E4DE3 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491829FD4BFD00A61FE0 /* FontAwesome5_Solid.ttf */; };
+		93F2B9C02A00FAC5000E4DE3 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B492029FD4BFD00A61FE0 /* Fontisto.ttf */; };
+		93F2B9C12A00FAC5000E4DE3 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491929FD4BFD00A61FE0 /* Foundation.ttf */; };
+		93F2B9C22A00FAC5000E4DE3 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491A29FD4BFD00A61FE0 /* Ionicons.ttf */; };
+		93F2B9C32A00FAC5000E4DE3 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491629FD4BFD00A61FE0 /* MaterialCommunityIcons.ttf */; };
+		93F2B9C42A00FAC5000E4DE3 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491729FD4BFD00A61FE0 /* MaterialIcons.ttf */; };
+		93F2B9C52A00FAC5000E4DE3 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491E29FD4BFD00A61FE0 /* Octicons.ttf */; };
+		93F2B9C62A00FAC5000E4DE3 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B492229FD4BFD00A61FE0 /* SimpleLineIcons.ttf */; };
+		93F2B9C72A00FAC5000E4DE3 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 932B491529FD4BFC00A61FE0 /* Zocial.ttf */; };
 		A8DA029E69174CCE30021266 /* Pods_xeniaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748F7208EA8C18D431F03FC1 /* Pods_xeniaTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,19 +66,6 @@
 			remoteInfo = RNDocumentPicker;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		9395846229FFEF5C00197D3A /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				9395846429FFF0A200197D3A /* xenia.app in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -324,7 +326,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				9395846229FFEF5C00197D3A /* CopyFiles */,
 				3D27F65F81FBF03F30143DCC /* [CP] Embed Pods Frameworks */,
 				611896DD83EB69C50B571E76 /* [CP] Copy Pods Resources */,
 				CEBDD91F25FC47623F6C9978 /* [CP-User] [RNFB] Core Configuration */,
@@ -428,6 +429,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93F2B9B82A00FAC5000E4DE3 /* AntDesign.ttf in Resources */,
+				93F2B9B92A00FAC5000E4DE3 /* Entypo.ttf in Resources */,
+				93F2B9BA2A00FAC5000E4DE3 /* EvilIcons.ttf in Resources */,
+				93F2B9BB2A00FAC5000E4DE3 /* Feather.ttf in Resources */,
+				93F2B9BC2A00FAC5000E4DE3 /* FontAwesome.ttf in Resources */,
+				93F2B9BD2A00FAC5000E4DE3 /* FontAwesome5_Brands.ttf in Resources */,
+				93F2B9BE2A00FAC5000E4DE3 /* FontAwesome5_Regular.ttf in Resources */,
+				93F2B9BF2A00FAC5000E4DE3 /* FontAwesome5_Solid.ttf in Resources */,
+				93F2B9C02A00FAC5000E4DE3 /* Fontisto.ttf in Resources */,
+				93F2B9C12A00FAC5000E4DE3 /* Foundation.ttf in Resources */,
+				93F2B9C22A00FAC5000E4DE3 /* Ionicons.ttf in Resources */,
+				93F2B9C32A00FAC5000E4DE3 /* MaterialCommunityIcons.ttf in Resources */,
+				93F2B9C42A00FAC5000E4DE3 /* MaterialIcons.ttf in Resources */,
+				93F2B9C52A00FAC5000E4DE3 /* Octicons.ttf in Resources */,
+				93F2B9C62A00FAC5000E4DE3 /* SimpleLineIcons.ttf in Resources */,
+				93F2B9C72A00FAC5000E4DE3 /* Zocial.ttf in Resources */,
 				93EB538F29D9A8FF00DF2682 /* happy_bday.mp3 in Resources */,
 				181C925B2593006B0028E871 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
@@ -675,7 +692,7 @@
 				CODE_SIGN_ENTITLEMENTS = xenia/xenia.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = B8C2TM7Z8Y;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = xenia/Info.plist;
@@ -684,7 +701,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.3;
+				MARKETING_VERSION = 2.5.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -707,7 +724,7 @@
 				CODE_SIGN_ENTITLEMENTS = xenia/xeniaRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = B8C2TM7Z8Y;
 				INFOPLIST_FILE = xenia/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -715,7 +732,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.3;
+				MARKETING_VERSION = 2.5.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

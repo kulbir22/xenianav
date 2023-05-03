@@ -27,7 +27,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
-import RNPickerSelect from 'react-native-picker-select';
 import { Dropdown } from 'react-native-material-dropdown';
 import Button from 'react-native-button';
 // import DatePicker from 'react-native-datepicker';

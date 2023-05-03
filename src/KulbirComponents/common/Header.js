@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {Text, View, Image, TouchableOpacity, Dimensions} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
-import { LinearTextGradient } from 'react-native-text-gradient';
 import {getWidthnHeight} from './width';
 import {MenuIcon} from './MenuIcon';
 
@@ -73,7 +72,7 @@ class Header extends Component{
   return (
     <View style={[{borderColor: 'black', borderWidth: 0}, getWidthnHeight(100)]}>
       <View>  
-        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#F03030', '#E1721D']} style={[linearGradient, getWidthnHeight(100, 15)]} onLayout={this.onLayout}>
+        
         {(images === undefined)?
         <View style={[{flexDirection: 'row', justifyContent: 'space-around', marginTop: 0, borderColor: 'black', borderWidth: 0}, getWidthnHeight(100, 15)]}>
           <View style={{borderColor: 'black', borderWidth: 0, alignSelf: 'flex-end'}}>
@@ -87,7 +86,6 @@ class Header extends Component{
         </View>
         : null
         }
-        </LinearGradient>
       </View>
           {(dimensions && menuState) ?
           <TouchableOpacity style={[{borderColor: 'black', borderWidth: 0, position: 'absolute'}, imageStyle]} onPress={() => {}}>
@@ -101,14 +99,7 @@ class Header extends Component{
       <View style={[textBackground, width, second]} onLayout={this.secondLayout}>
       {(this.state.title) ?
         <View>
-          <LinearTextGradient
-            style={[{fontWeight: "bold", textAlign: 'center', borderWidth: 0, borderColor: 'black', textAlignVertical: 'center'}, width, this.fontSizeH3()]}
-            locations={[0, 1]}
-            colors={['#F71A1A', '#E1721D']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}>
-              <Text style={{borderWidth: 0, borderColor: 'black', textAlignVertical: 'center'}}>{title}</Text>
-          </LinearTextGradient>
+          <Text style={{borderWidth: 0, borderColor: 'black', textAlignVertical: 'center'}}>{title}</Text>
         </View>
         : null
       }

@@ -295,7 +295,7 @@ export default function App(){
 
     function Game(){
         return (
-            <Drawer.Screen name="tictactoe" component={TicTacToe}/>
+            <Drawer.Screen options={{headerShown: false}} name="tictactoe" component={TicTacToe}/>
         );
     }
 
@@ -377,8 +377,8 @@ export default function App(){
                 >
 
                     {/* CHECK IN and CHECK OUT - STACK */}
-                    <Stack.Screen name="cameraPage" component={CameraPage}/>
-                    <Stack.Screen name="CheckOut" component={Checkoutpage}/>
+                    <Stack.Screen options={{title: 'Check In'}} name="cameraPage" component={CameraPage}/>
+                    <Stack.Screen options={{title: 'Check Out'}} name="CheckOut" component={Checkoutpage}/>
 
                     {/* DASHBOARD SCREENS - STACK */}
                     <Stack.Screen name="My_Profile" component={MyProfile}/>
