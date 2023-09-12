@@ -637,7 +637,7 @@ class StepCount extends Component {
                                         }, getMarginHorizontal(1.5)]}/>
                                     </TouchableOpacity>
                                 )
-                            })}
+                            })} 
                         </View>
                     </View>
                     {(showModal) && (
