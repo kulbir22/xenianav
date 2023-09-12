@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import LinearGradient from 'react-native-linear-gradient';
 import DocumentPicker from 'react-native-document-picker'
 import moment from 'moment';
-import { Dropdown } from 'react-native-material-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntdesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -20,7 +20,7 @@ import {
     DismissKeyboard, GradientIcon, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, GradientText,
     Spinner, AnimateDateLabel, Slider, getMarginRight, CheckList, LanguageSelection, ScreensModal, fontSizeH2,
     BasicChoppedButton, MaskedGradientText, stateList, cities, FamilyDetailsModal
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {fetchBaseURL, savedToken} from '../api/BaseURL';
 
 const COLOR1 = "#039FFD";
@@ -35,6 +35,12 @@ const mb1 = '1048576'; //1 MB
 class ESIForm extends Component{
     constructor(props){
         super(props)
+        let initialDate = moment("1940-01-01", "YYYY-MM-DD").format("YYYY-MM-DD");
+        const currentTime = "12:00 AM";
+        const initialDateTime = `${initialDate} ${currentTime}`;
+        const dobMaxDateTime = moment(`${moment().year()}-01-01`, "YYYY-MM-DD").subtract(18, 'years').format("YYYY-MM-DD");
+        const utcTimeStamp = moment(initialDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const dobMaxUtcTimeStamp = moment(dobMaxDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
         this.state = {
             submit: false,
             esi: '',
@@ -77,6 +83,9 @@ class ESIForm extends Component{
             nameError: true,
             dob: '',
             dobError: true,
+            dobTimeStamp: moment(dobMaxDateTime).valueOf(),
+            dobMinDate: utcTimeStamp,
+            dobMaxDate: dobMaxUtcTimeStamp,
             relation: '',
             relationID: null,
             relationError: true,
@@ -511,11 +520,17 @@ class ESIForm extends Component{
             const responseJson = response.data;
             if(name === 'familyState'){
                 this.setState({
-                    cityList: responseJson.data, stateName: item.stateName, stateID: item.stateID, stateError: false,
+                    cityList: responseJson.data.map((item) => {
+                        return { ...item, id: `${item.id}`}
+                    }), stateName: item.stateName, stateID: item.stateID, stateError: false,
                     cityName: item.cityName, cityID: item.cityID, cityError: false, 
                 })
             }else{
-                this.setState({cityList: responseJson.data})
+                this.setState({
+                    cityList: responseJson.data.map((item) => {
+                        return { ...item, id: `${item.id}`}
+                    })
+                })
             }
         }).catch((error) => {
             this.hideLoader();
@@ -715,6 +730,7 @@ class ESIForm extends Component{
                 {
                     headers: {
                         'Accept': 'application/json',
+                        'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${secretToken}`
                     }
                 }).then((response) => {
@@ -753,15 +769,23 @@ class ESIForm extends Component{
             cityName, aadharNumber, aadharNumberError, aadharAttachment, aadharAttachmentError, nomineeData, nomineeName, nomineeNameError, nomineeDOB, 
             nomineeDOBError, nomineeRelationID, nomineeRelation, nomineeRelationError, nomineeAddress, nomineeAddressError, nomineeAadhar, 
             nomineeAadharError, nomineeAttachment, nomineeAttachmentError, cityError, input1, input1Error, input2, input2Error, screens, showScreensList,
-            editFamilyDetails, cityList, editNomineeDetails, showFamilyModal, showNomineeModal, baseURL, loading, includeSecurity
+            editFamilyDetails, cityList, editNomineeDetails, showFamilyModal, showNomineeModal, baseURL, loading, includeSecurity,
+            dobMinDate, dobMaxDate, dobTimeStamp
         } = this.state;
         const apiData = JSON.parse(this.props.route.params.apiData);
-        const relationData = apiData.sectionData.dropdown.relations;
+        let relationData = [];
+        relationData = Array.isArray(apiData.sectionData.dropdown.relations) && apiData.sectionData.dropdown.relations.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
         const personalDetails = apiData.sectionData.firstPagedetail.personal;
         const residingWith = [
             {id: '1', name: 'Yes'},
             {id: '2', name: 'No'},
         ];
+        let stateList = [];
+        stateList = Array.isArray(apiData.sectionData.dropdown.states) && apiData.sectionData.dropdown.states.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
         const currentYear = moment().year();
         const month = '01';
         const minDate = `${currentYear - 75}-${month}-01`;
@@ -943,7 +967,7 @@ class ESIForm extends Component{
                                                                 />
                                                             </View>
                                                             <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(80), getMarginTop(2)]}>
-                                                                <AnimateDateLabel
+                                                                {/* <AnimateDateLabel
                                                                     containerColor={[(addFamilyDetails && dobError)? 'red' : '#C4C4C4', (addFamilyDetails && dobError)? 'red' : '#C4C4C4']}
                                                                     containerBorderWidth={[(addFamilyDetails && dobError)? 2 : 1, 1]}
                                                                     containerStyle={[{
@@ -963,12 +987,36 @@ class ESIForm extends Component{
                                                                     onDateChange={(date) => {this.setState({dob: date, dobError: false}, () => {
                                                                         Keyboard.dismiss();
                                                                     })}}
+                                                                /> */}
+                                                                <View>
+                                                                <AnimateDateLabel
+                                                                    containerColor={[(addFamilyDetails && dobError)? 'red' : '#C4C4C4', (addFamilyDetails && dobError)? 'red' : '#C4C4C4']}
+                                                                    containerBorderWidth={[(addFamilyDetails && dobError)? 2 : 1, 1]}
+                                                                    containerStyle={[{
+                                                                        borderRadius: getWidthnHeight(1).width, justifyContent: 'center', borderStyle: (addFamilyDetails && dobError)? 'dashed' : 'solid',
+                                                                    }, getWidthnHeight(40, 6.5)]}
+                                                                    slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
+                                                                    slideHorizontal={[0, getWidthnHeight(-10).width]}
+                                                                    style={[{justifyContent: 'center', alignItems: 'center'}, getWidthnHeight(87, 6.5)]}
+                                                                    date={moment(dobTimeStamp).utc().toDate()}
+                                                                    dateValue={dob}
+                                                                    minDate={dobMinDate}
+                                                                    maxDate={dobMaxDate}
+                                                                    mode="date"
+                                                                    placeholder="Date of Birth"
+                                                                    format="YYYY-MM-DD"
+                                                                    onDateChange={(date, fromTimeStamp) => {
+                                                                        this.setState({dob: date, dobError: false}, () => {
+                                                                            Keyboard.dismiss();
+                                                                        })
+                                                                    }}
                                                                 />
+                                                                </View>
                                                                 <View style={[{
                                                                     borderColor: (addFamilyDetails && relationError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                                     borderStyle: (addFamilyDetails && relationError)? 'dashed' : 'solid', borderWidth: (addFamilyDetails && relationError)? 2 : 1,
                                                                 }, getWidthnHeight(37, 6.5)]}>
-                                                                    <Dropdown
+                                                                    {/* <Dropdown
                                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(37), getMarginTop(-1)]}
                                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(37)]}
                                                                         label={'Relationship'}
@@ -987,7 +1035,36 @@ class ESIForm extends Component{
                                                                         baseColor = {(relation)? colorTitle : '#C4C4C4'}
                                                                         //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                         fontSize = {(relation)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                    /> */}
+                                                                    <Dropdown
+                                                                        style={[{borderColor: '#63d934', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(37, 6.5)]}
+                                                                        containerStyle={[{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}]}
+                                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                                        iconStyle={{marginRight: getWidthnHeight(2).width}}
+                                                                        placeholder='Select Item'
+                                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                                        data={relationData}
+                                                                        valueField={'id'}
+                                                                        labelField={'name'}
+                                                                        onChange={(item) => {
+                                                                            console.log(item);
+                                                                            this.setState({
+                                                                                relation: item.name, relationID: item.id, relationError: false 
+                                                                            })
+                                                                            this.dismissKeyboard();
+                                                                        }}
+                                                                        value={relationID}
                                                                     />
+                                                                    <View style={[{
+                                                                        position: 'absolute',
+                                                                        backgroundColor: '#FFFFFF',
+                                                                        left: 0,
+                                                                        marginLeft: getWidthnHeight(2).width,
+                                                                        top: 0
+                                                                    }, getMarginTop(-1)]}>
+                                                                        <Text style={[{fontSize: (fontSizeH4().fontSize - 2), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center', paddingHorizontal: 5}]}>Relationship</Text>
+                                                                    </View>
                                                                 </View>
                                                             </View>
                                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(80), getMarginTop(2)]}>
@@ -995,7 +1072,7 @@ class ESIForm extends Component{
                                                                     borderColor: (addFamilyDetails && residingError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                                     borderStyle: (addFamilyDetails && residingError)? 'dashed' : 'solid', borderWidth: (addFamilyDetails && residingError)? 2 : 1,
                                                                 }, getWidthnHeight(40, 6.5)]}>
-                                                                    <Dropdown
+                                                                    {/* <Dropdown
                                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(40), getMarginTop(-1)]}
                                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(40)]}
                                                                         label={'Residing Together'}
@@ -1014,7 +1091,36 @@ class ESIForm extends Component{
                                                                         baseColor = {(residing)? colorTitle : '#C4C4C4'}
                                                                         //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                         fontSize = {(residing)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                    /> */}
+                                                                    <Dropdown
+                                                                        style={[{borderColor: '#63d934', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(40, 6.5)]}
+                                                                        containerStyle={[{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}]}
+                                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                                        iconStyle={{marginRight: getWidthnHeight(2).width}}
+                                                                        placeholder='Select Item'
+                                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                                        data={residingWith}
+                                                                        valueField={'id'}
+                                                                        labelField={'name'}
+                                                                        onChange={(item) => {
+                                                                            console.log(item);
+                                                                            this.setState({
+                                                                                residing: item.name, residingID: item.id, residingError: false 
+                                                                            })
+                                                                            this.dismissKeyboard();
+                                                                        }}
+                                                                        value={residingID}
                                                                     />
+                                                                    <View style={[{
+                                                                        position: 'absolute',
+                                                                        backgroundColor: '#FFFFFF',
+                                                                        left: 0,
+                                                                        marginLeft: getWidthnHeight(2).width,
+                                                                        top: 0
+                                                                    }, getMarginTop(-1)]}>
+                                                                        <Text style={[{fontSize: (fontSizeH4().fontSize - 2), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center', paddingHorizontal: 5}]}>Residing Together</Text>
+                                                                    </View>
                                                                 </View>
                                                                 <AnimatedTextInput 
                                                                     placeholder=" Aadhar Number "
@@ -1055,10 +1161,10 @@ class ESIForm extends Component{
                                                                 flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: getWidthnHeight(80).width
                                                             }, getMarginTop(2)]}>
                                                                 <View style={[{
-                                                                    borderWidth: (addFamilyDetails && stateError)? 2 : 1, borderColor: (addFamilyDetails && stateError)? 'red' : '#C4C4C4',
+                                                                    borderWidth: (addFamilyDetails && stateError)? 2 : 1, borderColor: (addFamilyDetails && stateError)? 'red' : '#C4C4C4', justifyContent: 'center',
                                                                     borderStyle: (addFamilyDetails && stateError)? 'dashed' : 'solid', borderRadius: getWidthnHeight(1).width}, getWidthnHeight(40, 6.5)
                                                                 ]}>
-                                                                    <Dropdown
+                                                                    {/* <Dropdown
                                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(40), getMarginTop(-1.3)]}
                                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(40)]}
                                                                         label={"State"}
@@ -1077,14 +1183,45 @@ class ESIForm extends Component{
                                                                         value={stateName}
                                                                         baseColor={(stateName)? "#039FFD" : '#C4C4C4'}
                                                                         fontSize={(stateName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                    /> */}
+                                                                    <Dropdown
+                                                                        search
+                                                                        searchPlaceholder="Search..."
+                                                                        style={[{textOverflow:'hidden', borderColor: '#32c354', borderWidth: 0, flex: 1}]}
+                                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, flex: 1}]}
+                                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(40)]}
+                                                                        placeholder={'State'}
+                                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                                        data={stateList}
+                                                                        valueField={'id'}
+                                                                        labelField={'name'}
+                                                                        onChange={(item) => {
+                                                                            // console.log(item);
+                                                                            this.setState({
+                                                                                stateName: item.name, stateID: item.id, stateError: false,
+                                                                                cityList: [], cityID: null, cityError: true 
+                                                                            }, () => this.cities(this.state));
+                                                                            this.dismissKeyboard();
+                                                                        }}
+                                                                        value={stateID}
                                                                     />
+                                                                    <View style={[{
+                                                                        position: 'absolute',
+                                                                        backgroundColor: '#FFFFFF',
+                                                                        left: 0,
+                                                                        marginLeft: getWidthnHeight(2).width,
+                                                                        top: 0
+                                                                    }, getMarginTop(-1)]}>
+                                                                        <Text style={[{fontSize: (fontSizeH4().fontSize - 2), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center', paddingHorizontal: 5}]}>State</Text>
+                                                                    </View>
                                                                 </View>
                                                                 <View style={[{
                                                                     borderWidth: (addFamilyDetails && cityError)? 2 : 1, borderColor: (addFamilyDetails && cityError)? 'red' : '#C4C4C4',
                                                                     borderStyle: (addFamilyDetails && cityError)? 'dashed' : 'solid', borderRadius: getWidthnHeight(1).width}, 
                                                                     getWidthnHeight(37, 6.5)
                                                                 ]}>
-                                                                    <Dropdown
+                                                                    {/* <Dropdown
                                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(37), getMarginTop(-1.3)]}
                                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(37)]}
                                                                         disabled={stateError}
@@ -1105,7 +1242,37 @@ class ESIForm extends Component{
                                                                             // this.setState({ cities_Value })
                                                                             // this.setState({cityError: false})
                                                                         }}
+                                                                    /> */}
+                                                                    <Dropdown
+                                                                        search
+                                                                        searchPlaceholder="Search..."
+                                                                        style={{flex: 1}}
+                                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, flex: 1}]}
+                                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(37)]}
+                                                                        placeholder={'City'}
+                                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                                        data={cityList}
+                                                                        valueField={'id'}
+                                                                        labelField={'name'}
+                                                                        onChange={(item) => {
+                                                                            console.log(item);
+                                                                            this.setState({
+                                                                                cityName: item.name, cityID: item.id, cityError: false 
+                                                                            });
+                                                                            this.dismissKeyboard();
+                                                                        }}
+                                                                        value={cityID}
                                                                     />
+                                                                    <View style={[{
+                                                                        position: 'absolute',
+                                                                        backgroundColor: '#FFFFFF',
+                                                                        left: 0,
+                                                                        marginLeft: getWidthnHeight(2).width,
+                                                                        top: 0
+                                                                    }, getMarginTop(-1)]}>
+                                                                        <Text style={[{fontSize: (fontSizeH4().fontSize - 2), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center', paddingHorizontal: 5}]}>City</Text>
+                                                                    </View>
                                                                 </View>
                                                             </View>
                                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}, getWidthnHeight(80), getMarginTop(2)]}>
@@ -1143,9 +1310,9 @@ class ESIForm extends Component{
                                                                 <View style={[{alignItems: 'center'}, getWidthnHeight(50)]}>
                                                                     <BasicChoppedButton
                                                                         onPress={() => {
+                                                                            Keyboard.dismiss();
                                                                             this.setState({addFamilyDetails: true}, () => {
                                                                                 const {editFamilyDetails} = this.state;
-                                                                                Keyboard.dismiss();
                                                                                 if(editFamilyDetails){
                                                                                     this.saveFamilyDetails();
                                                                                 }else{
@@ -1265,7 +1432,7 @@ class ESIForm extends Component{
                                                                 />
                                                             </View>
                                                             <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(80), getMarginTop(2)]}>
-                                                                <AnimateDateLabel
+                                                                {/* <AnimateDateLabel
                                                                     containerColor={[(addNomineeDetails && nomineeDOBError)? 'red' : '#C4C4C4', (addNomineeDetails && nomineeDOBError)? 'red' : '#C4C4C4']}
                                                                     containerBorderWidth={[(addNomineeDetails && nomineeDOBError)? 2 : 1, 1]}
                                                                     containerStyle={[{
@@ -1285,12 +1452,32 @@ class ESIForm extends Component{
                                                                     onDateChange={(date) => {this.setState({nomineeDOB: date, nomineeDOBError: false}, () => {
                                                                         Keyboard.dismiss();
                                                                     })}}
+                                                                /> */}
+                                                                <AnimateDateLabel
+                                                                    containerColor={[(addNomineeDetails && nomineeDOBError)? 'red' : '#C4C4C4', (addNomineeDetails && nomineeDOBError)? 'red' : '#C4C4C4']}
+                                                                    containerBorderWidth={[(addNomineeDetails && nomineeDOBError)? 2 : 1, 1]}
+                                                                    containerStyle={[{
+                                                                        borderRadius: getWidthnHeight(1).width, justifyContent: 'center', borderStyle: (addNomineeDetails && nomineeDOBError)? 'dashed' : 'solid',
+                                                                    }, getWidthnHeight(40, 6.5)]}
+                                                                    slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
+                                                                    slideHorizontal={[0, getWidthnHeight(-10).width]}
+                                                                    style={[{justifyContent: 'center', alignItems: 'center'}, getWidthnHeight(87, 6.5)]}
+                                                                    date={moment(dobTimeStamp).utc().toDate()}
+                                                                    dateValue={nomineeDOB}
+                                                                    minDate={dobMinDate}
+                                                                    maxDate={dobMaxDate}
+                                                                    mode="date"
+                                                                    placeholder="Date of Birth"
+                                                                    format="YYYY-MM-DD"
+                                                                    onDateChange={(date) => {this.setState({nomineeDOB: date, nomineeDOBError: false}, () => {
+                                                                        Keyboard.dismiss();
+                                                                    })}}
                                                                 />
                                                                 <View style={[{
                                                                     borderColor: (addNomineeDetails && nomineeRelationError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                                     borderStyle: (addNomineeDetails && nomineeRelationError)? 'dashed' : 'solid', borderWidth: (addNomineeDetails && nomineeRelationError)? 2 : 1,
                                                                 }, getWidthnHeight(37, 6.5)]}>
-                                                                    <Dropdown
+                                                                    {/* <Dropdown
                                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(37), getMarginTop(-1)]}
                                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(37)]}
                                                                         label={'Relationship'}
@@ -1309,7 +1496,36 @@ class ESIForm extends Component{
                                                                         baseColor = {(nomineeRelation)? colorTitle : '#C4C4C4'}
                                                                         //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                         fontSize = {(nomineeRelation)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                    /> */}
+                                                                    <Dropdown
+                                                                        style={[{borderColor: '#63d934', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(37, 6.5)]}
+                                                                        containerStyle={[{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}]}
+                                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                                        iconStyle={{marginRight: getWidthnHeight(2).width}}
+                                                                        placeholder='Select Item'
+                                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                                        data={relationData}
+                                                                        valueField={'id'}
+                                                                        labelField={'name'}
+                                                                        onChange={(item) => {
+                                                                            console.log(item);
+                                                                            this.setState({
+                                                                                nomineeRelation: item.name, nomineeRelationID: item.id, nomineeRelationError: false 
+                                                                            })
+                                                                            this.dismissKeyboard();
+                                                                        }}
+                                                                        value={nomineeRelationID}
                                                                     />
+                                                                    <View style={[{
+                                                                        position: 'absolute',
+                                                                        backgroundColor: '#FFFFFF',
+                                                                        left: 0,
+                                                                        marginLeft: getWidthnHeight(2).width,
+                                                                        top: 0
+                                                                    }, getMarginTop(-1)]}>
+                                                                        <Text style={[{fontSize: (fontSizeH4().fontSize - 2), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center', paddingHorizontal: 5}]}>Relationship</Text>
+                                                                    </View>
                                                                 </View>
                                                             </View>
                                                             <View style={[getMarginTop(2)]}>

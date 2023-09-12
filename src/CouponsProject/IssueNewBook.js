@@ -8,7 +8,7 @@ import {Header} from './Header';
 import {
     getWidthnHeight, getMarginTop, getMarginLeft, fontSizeH4, ChoppedButton, getMarginVertical, getMarginBottom,
     Spinner, IOS_StatusBar, statusBarGradient
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 class IssueNewBook extends Component{
     constructor(props){

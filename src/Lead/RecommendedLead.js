@@ -12,7 +12,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import {
     CommonModal, IOS_StatusBar, getWidthnHeight, getMarginTop, WaveHeader, getMarginLeft,
     LeadInfoModal, RoundButton, DismissKeyboard, RecLeadCard, SearchBar, Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const colorBase = '#25A2F9';

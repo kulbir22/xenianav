@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "729528596235-60vuhdrrkh73i0tpobmeri4v6oq2vo00.apps.googleusercontent.com",
+          "client_id": "729528596235-42r7m0dcugaqfj9fqltht0cpu612oin9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xenia",
+            "certificate_hash": "411272e07a110b2dff5f61f576e61e239ea63f9f"
+          }
+        },
+        {
+          "client_id": "729528596235-pgpebdgschm4qq8fs0fthl57sefbu1jb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.xenia",
@@ -23,11 +31,11 @@
           }
         },
         {
-          "client_id": "729528596235-d3l88hthi6d1bs31bbgb4r5hmo1e04e6.apps.googleusercontent.com",
+          "client_id": "729528596235-pt78n1clocbrh4ejt0706hkskvfhb21i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.xenia",
-            "certificate_hash": "19e11360a1e92cf9bca4ee79947519575c469f7c"
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {

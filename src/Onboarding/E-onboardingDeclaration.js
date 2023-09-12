@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import DocumentPicker from 'react-native-document-picker';
 import { Dropdown } from 'react-native-material-dropdown';
 import ImagePicker from 'react-native-image-crop-picker';
-import MatertialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Delete from 'react-native-vector-icons/Ionicons';
 import {fetchBaseURL} from '../api/BaseURL';
@@ -23,7 +23,7 @@ import {
     DismissKeyboard, OTPInput, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, MaskedGradientText,
     SearchableDropDown, Slider, getMarginRight, CheckList, Attachments, ScreensModal, Spinner,
     DownloadModal, fontSizeH2, GradientIcon
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const COLOR1 = "#039FFD";
 const COLOR2 = "#EA304F";
@@ -43,24 +43,12 @@ class OnboardingDeclaration extends Component{
             fileSize: null,
             downloadFileName: '',
             downloadLink: function(){
-                const apiData = JSON.parse(props.apiData);
-                const downloadPath = `${apiData.url}${apiData.projectName.toLowerCase()}/${apiData.draftId}`;
+                console.log("^^^^^ PROPS: ", JSON.stringify(props?.route, null, 4));
+                const apiData = JSON.parse(props?.route?.params?.apiData);
+                const downloadPath = `${apiData?.url}${apiData?.projectName?.toLowerCase()}/${apiData?.draftId}`;
                 return downloadPath;
             }
         };
-        Alert.alert("Alert", `Click "VIEW" to open PDF in your web browser.`, 
-        [
-            {
-                text: 'Cancel'
-            },
-            {
-                text: 'View',
-                onPress: () => {
-                    Linking.openURL(this.state.downloadLink());
-                }
-            }
-        ]
-    )
     }
 
     componentDidMount(){
@@ -71,6 +59,19 @@ class OnboardingDeclaration extends Component{
         fetchBaseURL().then((baseURL) => {
             this.setState({baseURL}, () => {})
         })
+        Alert.alert("Alert", `Click "VIEW" to open PDF in your web browser.`, 
+            [
+                {
+                    text: 'Cancel'
+                },
+                {
+                    text: 'View',
+                    onPress: () => {
+                        Linking.openURL(this.state.downloadLink());
+                    }
+                }
+            ]
+        );
     }
 
     handleBackButton = () => {
@@ -106,8 +107,6 @@ class OnboardingDeclaration extends Component{
         const {
             submit, loading, downloadModal, fullFileName, percent
         } = this.state;
-        const downloadURL = this.state.downloadLink();
-        //console.log("@@@ ### DOWNLOAD LINK: ", downloadURL)
         return (
             <SafeAreaView style={[{alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: '#F6F6F6', flex: 1}]}>
                 <StatusBar hidden={false} barStyle="dark-content" />
@@ -165,14 +164,14 @@ class OnboardingDeclaration extends Component{
                                         style={{alignItems: 'center'}}
                                         activeOpacity={0.7}
                                         onPress={() => {
-                                            Linking.openURL(downloadURL)
+                                            Linking.openURL(this.state.downloadLink());
                                         }}
                                     >
                                         <GradientIcon
                                             start={{x: 0.3, y: 0}}
                                             end={{x: 0.7, y: 0}}
                                             containerStyle={[{borderWidth: 0, borderColor: 'red', alignItems: 'center'}, getWidthnHeight(20)]}
-                                            icon={<MatertialCommunityIcons name={'file-pdf'} style={{backgroundColor: 'transparent'}} size={getWidthnHeight(20).width}/>}
+                                            icon={<FontAwesome5 name={'file-pdf'} style={{backgroundColor: 'transparent'}} size={getWidthnHeight(20).width}/>}
                                             colors={["#DA1212", "#F23A3A"]}
                                         />
                                         <Text style={[{fontWeight: 'bold', fontSize: (fontSizeH4().fontSize + 3)}, styles.boldFont]}>Open PDF</Text>

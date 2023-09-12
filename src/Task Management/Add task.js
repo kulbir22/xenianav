@@ -16,7 +16,7 @@ import {extractBaseURL} from '../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, getMarginTop, getMarginLeft, Spinner, fontSizeH4,
     AnimatedTextInput, getMarginHorizontal, fontSizeH3, Slider, DateTimePicker
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import moment from 'moment';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

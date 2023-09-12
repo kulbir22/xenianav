@@ -49,7 +49,7 @@ import Dialog, {
   ScaleAnimation,
 } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, getMarginTop, getMarginLeft, Spinner} from '../KulbirComponents/common';
+import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, getMarginTop, getMarginLeft, Spinner} from '../NewComponents/common';
 import { Platform } from 'react-native';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

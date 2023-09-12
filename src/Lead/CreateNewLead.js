@@ -22,7 +22,7 @@ import {
     FloatingTitleTextInputField, getMarginVertical, DateSelector, WaveHeader, 
     TimePicker, RoundButton, RadioEnable, RadioDisable, AlertBox, fontSizeH4,
     CustomTextInput, Spinner, getMarginLeft, DateTimePicker
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import { cameraFile, show_HideTimePicker, prebidTime } from '../store/redux/reducer';
 
 //const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

@@ -13,7 +13,7 @@ import {
     CommonModal, IOS_StatusBar, getWidthnHeight, LeadInfoModal, WaveHeader, RoundButton, Loader,
     getMarginTop, LeadCommonCard, getMarginBottom, DismissKeyboard, getMarginLeft, SearchBar,
     Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const MD_ID = 13;

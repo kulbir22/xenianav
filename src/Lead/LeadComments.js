@@ -14,7 +14,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import {
     IOS_StatusBar, getWidthnHeight, getMarginTop, WaveHeader, getMarginVertical, Spinner, getMarginBottom, 
     getMarginLeft, DownloadModal
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {getLeadAttachmentDownloadAPI} from '../api/BaseURL';
 import { color } from 'react-native-reanimated';
 

@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import checkVersion from 'react-native-store-version';
 
 import { sendProps, loginState, setProject, setServerLabel } from './store/redux/reducer';
-import { fontSizeH4, getMarginRight } from './KulbirComponents/common';
+import { fontSizeH4, getMarginRight } from './NewComponents/common';
 
 const testLabel = (<Text style={[{fontSize: fontSizeH4().fontSize - 3, color: 'white'}, getMarginRight(3)]}>Test</Text>);
 
@@ -99,7 +99,7 @@ function AppLoading({navigation}){
 
     useEffect(() => {
         checkXeniaUpdate();
-        console.log("@@@ LOADING NAVIGATION STATE: ", navigation.getState());
+        console.log("^^^&&&&###$$$$ LOADING NAVIGATION STATE: ", navigation.getState());
     }, []);
     return (
         <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>

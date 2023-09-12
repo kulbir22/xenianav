@@ -17,7 +17,7 @@ import Dialog, {
 import NameBottomBorder from '../Components/Name bottom border'
 import TitleBox from '../Components/title box'
 import { extractBaseURL } from '../api/BaseURL';
-import { CommonModal, IOS_StatusBar, DateTimePicker, getWidthnHeight, Spinner, getMarginLeft, getMarginTop, fontSizeH4, getMarginHorizontal } from '../KulbirComponents/common';
+import { CommonModal, IOS_StatusBar, DateTimePicker, getWidthnHeight, Spinner, getMarginLeft, getMarginTop, fontSizeH4, getMarginHorizontal } from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class ApprovalDateExtensionList extends Component {

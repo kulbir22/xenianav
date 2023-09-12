@@ -13,7 +13,7 @@ import { reloadDrawer } from '../store/redux/reducer';
 import { 
     GradientIcon, getWidthnHeight, getMarginBottom, fontSizeH2, fontSizeH3, MaskedGradientText,
     getMarginTop, getMarginVertical, getMarginHorizontal, fontSizeH4, getMarginRight, getMarginLeft
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 
 /**

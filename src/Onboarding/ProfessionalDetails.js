@@ -11,7 +11,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import RNFS, { exists } from 'react-native-fs';
 import LinearGradient from 'react-native-linear-gradient';
 import DocumentPicker from 'react-native-document-picker';
-import { Dropdown } from 'react-native-material-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import ImagePicker from 'react-native-image-crop-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -22,7 +22,7 @@ import {
     DismissKeyboard, OTPInput, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, MaskedGradientText,
     SearchableDropDown, Slider, getMarginRight, CheckList, Attachments, ScreensModal, Spinner,
     DownloadModal, GradientIcon
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const COLOR1 = "#039FFD";
 const COLOR2 = "#EA304F";
@@ -180,7 +180,7 @@ class ProfessionalDetails extends Component{
                     Object.assign(documentDetails, {[item.type_name]: ''})
                 })
                 this.setState({documentDetails}, () => {
-                    //console.log("ONBOARDING URL: ", this.state.baseURL)
+                    console.log("ONBOARDING URL: ", documentsList, "\n\n\n", this.state.documentDetails)
                     if(apiData.sectionData.oldData){
                         this.fillOldData();
                     }
@@ -256,10 +256,7 @@ class ProfessionalDetails extends Component{
                 return;
             }else{
                 const checkError = this.state.noError();
-                let noPanError = true;
-                if(checkPanError){
-                    noPanError = this.state.noPanError();
-                }
+                let noPanError = this.state.noPanError();
                 let professionalDetails = null;
                 if(checkError && noPanError){
                     const apiData = JSON.parse(this.props.route.params.apiData);
@@ -316,6 +313,16 @@ class ProfessionalDetails extends Component{
                             }else{
                                 sendData.append(`professional[${name}][]`, "")
                             }
+                        }else if(name === "pan_card_file" || name === "cancel_cheque"){
+                            let data = [];
+                            data = professionalDetails[name];
+                            if(data.length > 0){
+                                data.forEach((item) => {
+                                    sendData.append(`professional[${name}]`, item)
+                                })
+                            }else{
+                                sendData.append(`professional[${name}]`, "")
+                            }
                         }else{
                             sendData.append(`professional[${name}]`, professionalDetails[name])
                         }
@@ -367,12 +374,13 @@ class ProfessionalDetails extends Component{
                         })
                     });
                     this.showLoader();
-                    console.log("&&&&&&&& BASEURL: ", `${baseURL}/onboarding/submit-onboarding`, "\n\nDATA: ", sendData)
+                    console.log("&&&&&&&& BASEURL: ", `${baseURL}/onboarding/submit-onboarding`, "\n\nDATA: ", JSON.stringify(sendData, null, 4));
                     axios.post(`${baseURL}/onboarding/submit-onboarding`,
                     sendData,
                     {
                         headers: {
                             'Accept': 'application/json',
+                            'Content-Type': 'multipart/form-data',
                             'Authorization': `Bearer ${secretToken}`
                         }
                     }).then((response) => {
@@ -454,13 +462,14 @@ class ProfessionalDetails extends Component{
                 const res = await DocumentPicker.pick({
                     type: [DocumentPicker.types.pdf],
                 })
-                if(res.size > mb1){
+                console.log("^^^ PASSBOOK: ", res, name, bankPassbook)
+                if(res[0].size > mb1){
                     alert(`File size is too large, recommended size is 1MB.`);
                     return;
                 }else{
                     if(name === bankPassbook){
                         this.setState({passbookAttachment: res, passbookError: false}, () => {
-                            //console.log("PASSBOOK", this.state.passbookAttachment)
+                            console.log("PASSBOOK", this.state.passbookAttachment)
                         })
                     }else if(name === panCard){
                         this.setState({panAttachment: res, panAttachmentError: false}, () => {
@@ -571,10 +580,10 @@ class ProfessionalDetails extends Component{
                         }
                     }
                 }else{
-                    console.log("###^^^ITS AN OBJECT")
                     res = await DocumentPicker.pick({
                         type: [DocumentPicker.types.pdf],
                     })
+                    console.log("###@@@@ ITS AN OBJECT: ", res)
                     if(sizeLimit === '1MB'){
                         if(res.size > mb1){
                             alert(`File size is too large, recommended size is ${sizeLimit}`)
@@ -586,7 +595,7 @@ class ProfessionalDetails extends Component{
                             return;
                         }
                     }
-                    const pdfFile = Object.assign(res, {documentName: item.type_name});
+                    const pdfFile = Object.assign(res[0], {documentName: item.type_name});
                     let checkIndex = null;
                     checkIndex = uploadDocuments.findIndex((data) => {
                         return (item.type_name === data.documentName);
@@ -799,6 +808,7 @@ class ProfessionalDetails extends Component{
         const projectName = apiData.projectName;
         const designation = apiData.designationName;
         const bankList = apiData.sectionData.dropdown.banks;
+        // console.log("@#@#@ BANK LIST: ", JSON.stringify(apiData.sectionData.dropdown.banks, null, 4));
         let professionalDetails = null;
         if(apiData.sectionData.oldData){
             professionalDetails = apiData.sectionData.oldData.professional;
@@ -846,7 +856,7 @@ class ProfessionalDetails extends Component{
                                                     borderColor: (submit && bankError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                     borderStyle: (submit && bankError)? 'dashed' : 'solid', borderWidth: (submit && bankError)? 2 : 1,
                                                 }, getWidthnHeight(87, 6.5)]}>
-                                                    <Dropdown
+                                                    {/* <Dropdown
                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
                                                         label={'Bank Name'}
@@ -865,13 +875,32 @@ class ProfessionalDetails extends Component{
                                                         baseColor = {(bankName)? colorTitle : '#C4C4C4'}
                                                         //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                         fontSize = {(bankName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                    /> */}
+                                                    <Dropdown
+                                                        search
+                                                        searchPlaceholder="Search..."
+                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
+                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
+                                                        placeholder={'Bank Name*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                        data={bankList}
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            this.setState({
+                                                                bankName: item.name, bankID: item.id, bankError: false 
+                                                            }, () => console.log("### BANK ID: ", this.state.bankID))
+                                                            this.dismissKeyboard();
+                                                        }}
+                                                        value={+bankID}
                                                     />
                                                 </View>
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Name as per Bank Passbook "
+                                                        placeholder=" Name as per Bank Passbook* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={name}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -901,7 +930,7 @@ class ProfessionalDetails extends Component{
                                                 </View>
                                                 <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Bank A/C No "
+                                                        placeholder=" Bank A/C No* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={bankAC}
                                                         keyboardType={'numeric'}
@@ -934,7 +963,7 @@ class ProfessionalDetails extends Component{
                                                         }, getWidthnHeight(40, 6.5), getMarginHorizontal(2)]}
                                                     />
                                                     <AnimatedTextInput 
-                                                        placeholder=" Confirm Bank A/C No"
+                                                        placeholder=" Confirm Bank A/C No*"
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={confirmBankAC}
                                                         editable={(bankACError)? false : true}
@@ -973,7 +1002,7 @@ class ProfessionalDetails extends Component{
                                             </View>
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" IFSC Code "
+                                                    placeholder=" IFSC Code* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={ifsc}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1008,7 +1037,7 @@ class ProfessionalDetails extends Component{
                                                     }, getWidthnHeight(40, 6.5), getMarginHorizontal(2)]}
                                                 />
                                                 <AnimatedTextInput 
-                                                    placeholder=" Confirm IFSC Code "
+                                                    placeholder=" Confirm IFSC Code* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={confirmIFSC}
                                                     editable={(!ifscError)? true : false}
@@ -1046,7 +1075,7 @@ class ProfessionalDetails extends Component{
                                             </View>
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}, getWidthnHeight(85), getMarginTop(2)]}>
                                                 <View>
-                                                    <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4()]}>Cancel Cheque / Bank Pass Book Copy (pdf)</Text>
+                                                    <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4()]}>Cancel Cheque / Bank Pass Book Copy (pdf)*</Text>
                                                     {(professionalDetails) &&
                                                         <View style={[{flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(15)]}>
                                                             <TouchableOpacity onPress={() => {
@@ -1094,7 +1123,7 @@ class ProfessionalDetails extends Component{
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Aadhar Number "
+                                                        placeholder=" Aadhar Number* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={aadharNumber}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1130,7 +1159,7 @@ class ProfessionalDetails extends Component{
                                                 </View>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Name on Aadhar "
+                                                        placeholder=" Name on Aadhar* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={aadharName}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1161,7 +1190,7 @@ class ProfessionalDetails extends Component{
                                             </View>
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}, getWidthnHeight(85), getMarginTop(2)]}>
                                                 <View style={{alignItems: 'flex-start'}}>
-                                                    <Text style={[{color: 'grey'}, fontSizeH4()]}>Aadhar Card (Self Attested)</Text>
+                                                    <Text style={[{color: 'grey'}, fontSizeH4()]}>Aadhar Card (Self Attested)*</Text>
                                                     {(oldAadharAttachment.length === 0)?
                                                         <Text style={[{color: 'grey'}, fontSizeH4()]}>(Front and Back)(pdf)</Text>
                                                     :
@@ -1207,7 +1236,7 @@ class ProfessionalDetails extends Component{
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" PAN Number "
+                                                        placeholder=" PAN Number* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={panNumber}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1246,7 +1275,7 @@ class ProfessionalDetails extends Component{
                                                 </View>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Name on PAN "
+                                                        placeholder=" Name on PAN* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={panName}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1277,7 +1306,7 @@ class ProfessionalDetails extends Component{
                                             </View>
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}, getWidthnHeight(85), getMarginTop(2)]}>
                                                 <View>
-                                                    <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4()]}>PAN Card (Self Attested)</Text>
+                                                    <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4()]}>PAN Card (Self Attested)*</Text>
                                                     {(professionalDetails && (professionalDetails.pan_card_file !== 'null' || professionalDetails.pan_card_file !== null || professionalDetails.pan_card_file!== '')) &&
                                                         <View style={[{flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(15)]}>
                                                             <TouchableOpacity onPress={() => {
@@ -1321,7 +1350,7 @@ class ProfessionalDetails extends Component{
                                                     }
                                                 </TouchableOpacity>
                                             </View>
-                                            <View style={[{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(85), getMarginTop(2)]}>
+                                            {/* <View style={[{alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between'}, getWidthnHeight(85), getMarginTop(2)]}>
                                                 <Text style={[{color: 'grey'}, fontSizeH4()]}>Has EPF in last organisation</Text>
                                                 <View style={[{borderColor: 'red', borderWidth: 0}]}>
                                                     <Slider 
@@ -1334,8 +1363,8 @@ class ProfessionalDetails extends Component{
                                                         delay={300}
                                                     />
                                                 </View>
-                                            </View>
-                                            {(previousEPF) &&
+                                            </View> */}
+                                            {/* {(previousEPF) &&
                                                 <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                     <AnimatedTextInput 
                                                         placeholder=" UAN Number "
@@ -1371,7 +1400,7 @@ class ProfessionalDetails extends Component{
                                                         }, getWidthnHeight(85, 6.5), getMarginHorizontal(1)]}
                                                     />
                                                 </View>
-                                            }
+                                            } */}
                                             <View style={[{backgroundColor: 'rgba(196, 196, 196, 0.5)', height: 1}, getWidthnHeight(87), getMarginTop(3)]}/>
                                             <View style={[{alignSelf: 'flex-start'}, getMarginLeft(3), getMarginTop(2)]}>
                                                 <MaskedGradientText
@@ -1398,6 +1427,9 @@ class ProfessionalDetails extends Component{
                                                         if(cloneData[index]){
                                                             showButtons = true;
                                                         }
+                                                        if(item?.extension){
+                                                            return null;
+                                                        }
                                                         //console.log("DATA LIST: ", documentsList);
                                                         return (
                                                             <View style={[{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderColor: 'red', borderWidth: 0}, getWidthnHeight(85), getMarginTop(2)]}>
@@ -1405,7 +1437,7 @@ class ProfessionalDetails extends Component{
                                                                     {(item.extension)?
                                                                         <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4(), getWidthnHeight(70)]}>{`${item.name} (${item.mime_type})(optional)`}</Text>
                                                                     :
-                                                                        <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4(), getWidthnHeight(70)]}>{`${item.name} (${item.mime_type})`}</Text>
+                                                                        <Text style={[{color: 'grey', paddingBottom: getMarginTop(1).marginTop}, fontSizeH4(), getWidthnHeight(70)]}>{`${item.name} (${item.mime_type})*`}</Text>
                                                                     }
                                                                     {((Array.isArray(item.old_value) && item.old_value.length > 0) && showButtons) &&
                                                                         <TouchableOpacity 

@@ -29,7 +29,7 @@ import Watch from '../Image/appliedLeaveDetails.png';
 import LeaveSectionDesign from '../LeaveSectionDesign';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, IOS_StatusBar, WaveHeader} from '../KulbirComponents/common';
+import {CommonModal, IOS_StatusBar, WaveHeader} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 class AppliedLeaveDetailPage extends Component {

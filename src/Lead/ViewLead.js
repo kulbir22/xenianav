@@ -20,7 +20,7 @@ import {extractBaseURL, getLeadDownloadAPI} from '../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, getWidthnHeight, getMarginTop, FloatingTitleTextInputField, 
     WaveHeader, RoundButton, getMarginVertical, Loader, DownloadModal, Spinner, getMarginLeft
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import { Linking } from 'react-native';
 import { error } from 'pdf-lib';
 

@@ -44,7 +44,7 @@ import Dialog, {
   ScaleAnimation,
 } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal} from '../KulbirComponents/common';
+import {CommonModal} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class Leaves extends Component {

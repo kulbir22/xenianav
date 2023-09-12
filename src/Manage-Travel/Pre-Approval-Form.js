@@ -17,7 +17,7 @@ import {
     FloatingTitleTextInputField, getMarginVertical, DateSelector, WaveHeader, fontSize_H3, ItineraryModal,
     TimePicker, RoundButton, RadioEnable, RadioDisable, AlertBox, DismissKeyboard, getMarginLeft, Date, MySwitch,
     Spinner, getMarginRight, StayModal, statusBarGradient, CustomTextInput, SearchableDropDown, Slider, getMarginHorizontal
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {extractBaseURL} from '../api/BaseURL';
 
 const colorBase = '#25A2F9';

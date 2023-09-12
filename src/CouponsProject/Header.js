@@ -8,8 +8,8 @@ import {Actions} from 'react-native-router-flux';
 import Gradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Upload from 'react-native-vector-icons/MaterialCommunityIcons';
-import {getWidthnHeight, getMarginRight, getMarginTop, getMarginLeft} from '../KulbirComponents/common';
-import {MenuIcon} from '../KulbirComponents/common';
+import {getWidthnHeight, getMarginRight, getMarginTop, getMarginLeft} from '../NewComponents/common';
+import {MenuIcon} from '../NewComponents/common';
 import {fetchBaseURL} from '../api/BaseURL';
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome';
 

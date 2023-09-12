@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, TextInput, Animated, TouchableOpacity, StyleSheet, Keyboard, ScrollView} from 'react-native';
 import Close from 'react-native-vector-icons/AntDesign';
-import {getWidthnHeight, getMarginLeft} from '../KulbirComponents/common';
+import {getWidthnHeight, getMarginLeft} from '../NewComponents/common';
 
 class TestTextInput extends Component {
 

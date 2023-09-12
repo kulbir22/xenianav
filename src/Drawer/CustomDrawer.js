@@ -18,7 +18,7 @@ import { showGame, reloadDrawer, selectDrawerItem, loginState, setServerLabel } 
 import { 
     getWidthnHeight, fontSizeH4, getMarginRight, getMarginTop, getMarginLeft, 
     getMarginVertical, fontSizeH2, fontSizeH3, GradientIcon, Spinner, getMarginBottom
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 let COLOR1 = "#039FFD";
 let COLOR2 = "#EA304F"; 
@@ -262,7 +262,7 @@ function CustomDrawer(props) {
             item.title === "Test Screen" ? {...item, image: TestScreen.image} : item
         )))
         setNewDrawer(updateRoutes)
-        __DEV__ && console.log("### RECALL DRAWER: ", updateRoutes)
+        // __DEV__ && console.log("### RECALL DRAWER: ", updateRoutes)
     }, [props.navigation, drawerData]);
 
     const animatedStyle = {
@@ -302,7 +302,7 @@ function CustomDrawer(props) {
                     return (item.category_name === 'Games')
                 })
                 if(checkGames.length > 0){
-                    console.log("$$$^^^ THIS IS IT: ", checkGames);
+                    // console.log("$$$^^^ THIS IS IT: ", checkGames);
                     dispatch(showGame(true));
                 }else if(checkGames.length === 0){
                     dispatch(showGame(false));

@@ -12,7 +12,7 @@ import {fetchBaseURL} from '../api/BaseURL';
 import {
     getWidthnHeight, IOS_StatusBar, getMarginTop, fontSizeH4, fontSizeH3, AnimatedTextInput, getMarginHorizontal,
     DismissKeyboard, OTPInput, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const COLOR1 = "#039FFD";
 const COLOR2 = "#EA304F";
@@ -78,6 +78,13 @@ class WelcomePortal extends Component{
             this.getAndroidStoragePermission();
         }else if(Platform.OS === 'ios'){
             this.get_iOS_StoragePermission();
+        }
+    }
+
+    componentDidUpdate(){
+        const { input1, input2, input3, input4, input5, input6 } = this.state;
+        if(input1 && input2 && input3 && input4 && input5 && input6){
+            this.matchOTP();   
         }
     }
 
@@ -195,47 +202,53 @@ class WelcomePortal extends Component{
             baseURL, mobileNumber, input1, input2, input3, input4, input5, input6
         } = this.state;
         this.showLoader();
-        axios.post(`${baseURL}/onboarding/match-otp`,
-        {
-            mobile_number: mobileNumber,
-            otp: `${input1}${input2}${input3}${input4}${input5}${input6}`
-        },
-        {
-            headers: {
-                'Accept': 'application/json',
-            }
-        }).then((response) => {
-            this.hideLoader();
-            const parsedData = response.data;
-            if(parsedData.status === 1){
-                alert(parsedData.message);
-                if(parsedData.complete === false){
-                    // console.log("MATCH SUCCESS", parsedData)
-                    const screenList = parsedData.sectionData.links.pageLinks;
-                    const currentPage = parsedData.currentPage;
-                    const index = screenList.findIndex((item) => {
-                        return (item.page === currentPage)
-                    })
-                    //console.log("PAGE INDEX: ", index, currentPage)
-                    //AsyncStorage.setItem("onboardingScreens", JSON.stringify(screenList));
-                    AsyncStorage.setItem('onboardingToken', parsedData.secret_token);
-                    this.props.navigation.navigate(screenList[index]['key'], {apiData: JSON.stringify(parsedData)})
-                }else{
-                    this.props.navigation.navigate('OtherDetails', {apiData: JSON.stringify(parsedData)});
+        const otp = `${input1}${input2}${input3}${input4}${input5}${input6}`;
+        this.setState({
+            input1: '', input2: '', input3: '',
+            input4: '', input5: '', input6: ''
+        }, () => {
+            axios.post(`${baseURL}/onboarding/match-otp`,
+            {
+                mobile_number: mobileNumber,
+                otp 
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
                 }
-            }else{
-                alert(parsedData.message);
-            }
-        }).catch((error) => {
-            this.hideLoader();
-            console.log("ERROR: ", error)
-            if(error.response){
-                const status = error.response.status;
-                Alert.alert("ERROR", `Error Code: ${status}602`);
-            }else{
-                alert(`${error}, API CODE: 602`)
-            }
-        })
+            }).then((response) => {
+                this.hideLoader();
+                const parsedData = response.data;
+                if(parsedData.status === 1){
+                    alert(parsedData.message);
+                    if(parsedData.complete === false){
+                        // console.log("MATCH SUCCESS", parsedData)
+                        const screenList = parsedData.sectionData.links.pageLinks;
+                        const currentPage = parsedData.currentPage;
+                        const index = screenList.findIndex((item) => {
+                            return (item.page === currentPage)
+                        })
+                        //console.log("PAGE INDEX: ", index, currentPage)
+                        //AsyncStorage.setItem("onboardingScreens", JSON.stringify(screenList));
+                        AsyncStorage.setItem('onboardingToken', parsedData.secret_token);
+                        this.props.navigation.navigate(screenList[index]['key'], {apiData: JSON.stringify(parsedData)})
+                    }else{
+                        this.props.navigation.navigate('OtherDetails', {apiData: JSON.stringify(parsedData)});
+                    }
+                }else{
+                    alert(parsedData.message);
+                }
+            }).catch((error) => {
+                this.hideLoader();
+                console.log("ERROR: ", error.response)
+                if(error.response){
+                    const status = error.response.status;
+                    Alert.alert("ERROR", `Error Code: ${status}602`);
+                }else{
+                    alert(`${error}, API CODE: 602`)
+                }
+            })
+        });
     }
 
     render(){

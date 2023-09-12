@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker, PickerIOS } from '@react-native-picker/picker';
 import moment from 'moment';
 import axios from 'axios';
-import { IOS_StatusBar, Spinner, fontSizeH4, getWidthnHeight, getMarginTop, GradientBox, getMarginLeft, fontSizeH3 } from '../KulbirComponents/common';
+import { IOS_StatusBar, Spinner, fontSizeH4, getWidthnHeight, getMarginTop, GradientBox, getMarginLeft, fontSizeH3 } from '../NewComponents/common';
 import { extractBaseURL } from '../api/BaseURL';
 
 class HolidayList extends Component {

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, TextInput, PanResponder, Animated} from 'react-native';
-import {IOS_StatusBar, WaveHeader, statusBarGradient, getWidthnHeight} from '../KulbirComponents/common';
+import {IOS_StatusBar, WaveHeader, statusBarGradient, getWidthnHeight} from '../NewComponents/common';
 export default class TestInputText extends Component {
 
     constructor (props) {

@@ -2,7 +2,7 @@
 // import {View, Keyboard, Text, TouchableOpacity, Animated, PanResponder, ScrollView, KeyboardAvoidingView, Platform, StatusBar} from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 // import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-// import {getWidthnHeight, IOS_StatusBar, InputText, getMarginTop, WaveHeader, AnimatedTextInput, fontSizeH4, getMarginHorizontal} from '../KulbirComponents/common';
+// import {getWidthnHeight, IOS_StatusBar, InputText, getMarginTop, WaveHeader, AnimatedTextInput, fontSizeH4, getMarginHorizontal} from '../NewComponents/common';
 
 // class MultipleInput extends Component {
 //     constructor(props){

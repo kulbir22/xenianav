@@ -7,16 +7,18 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
-import { Dropdown } from 'react-native-material-dropdown';
+// import { Dropdown } from 'react-native-material-dropdown';
 import axios from 'axios';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Down from 'react-native-vector-icons/MaterialIcons';
 import Delete from 'react-native-vector-icons/Ionicons';
+import { Dropdown } from 'react-native-element-dropdown';
+
 import {
     getWidthnHeight, IOS_StatusBar, getMarginTop, fontSizeH4, fontSizeH3, AnimatedTextInput, getMarginHorizontal,
     DismissKeyboard, GradientIcon, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, MaskedGradientText,
     SearchableDropDown, AnimateDateLabel, Slider, getMarginRight, CheckList, LanguageSelection, ScreensModal, Spinner,
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {fetchBaseURL} from '../api/BaseURL';
 
 const COLOR1 = "#039FFD";
@@ -37,6 +39,13 @@ class Registration extends Component{
     // };
     constructor(props){
         super(props)
+        let initialDate = moment("1970-01-01", "YYYY-MM-DD").format("YYYY-MM-DD");
+        const currentTime = "12:00 AM";
+        const initialDateTime = `${initialDate} ${currentTime}`;
+        const dobMaxDateTime = moment(`${moment().year()}-01-01`, "YYYY-MM-DD").subtract(18, 'years').format("YYYY-MM-DD");
+        const utcTimeStamp = moment(initialDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const dobMaxUtcTimeStamp = moment(dobMaxDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
+        console.log("$$$$$ DOB MAX DATE: ", moment("1995-12-25").valueOf(), moment(dobMaxDateTime).valueOf());
         this.state = {
             submit: false,
             salutationID: null,
@@ -49,6 +58,9 @@ class Registration extends Component{
             lastName: '',
             lastNameError: true,
             dob: '',
+            dobTimeStamp: moment(dobMaxDateTime).valueOf(),
+            dobMinDate: utcTimeStamp,
+            dobMaxDate: dobMaxUtcTimeStamp,
             dobError: true,
             fatherName: '',
             fatherNameError: true,
@@ -473,6 +485,7 @@ class Registration extends Component{
         {
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${secretToken}`
             }
         }).then((response) => {
@@ -487,7 +500,7 @@ class Registration extends Component{
             }
         }).catch((error) => {
             this.hideLoader();
-            console.log("%%% ERROR: ", error)
+            console.log("%%% ERROR: ", JSON.stringify(error, null, 4))
             if(error.response){
                 const status = error.response.status;
                 console.log("%%% ERROR2: ", error.response)
@@ -632,12 +645,16 @@ class Registration extends Component{
             }
         }).then((response) => {
             this.hideLoader();
-            //console.log("@@@ STATE WISE CITIES: ", (response.data))
+            console.log("@@@ STATE WISE CITIES: ", (response.data))
             const responseJson = response.data;
             if(type === 'permanent'){
-                this.setState({cityList: responseJson.data}, () => {})
+                this.setState({cityList: responseJson.data.map((item) => {
+                    return {...item, id: `${item.id}`}
+                })}, () => {})
             }else if(type === 'correspondence'){
-                this.setState({city2List: responseJson.data}, () => {})
+                this.setState({city2List: responseJson.data.map((item) => {
+                    return {...item, id: `${item.id}`}
+                })}, () => {})
             }
         }).catch((error) => {
             this.hideLoader();
@@ -658,10 +675,10 @@ class Registration extends Component{
             marriageDate, marriageDateError, qualificationID, qualificationName, qualificationError, skillsID, skillsName, skillsError, languageID, 
             languageName, languageError, mobile1, mobile1Error, mobile2, mobile2Error, emailAddress, email, emailError, house, houseError, sameAddress,
             road, roadError, locality, localityError, countryID, countryName, countryError, stateID, stateName, stateError, cityID, cityName, cityError,
-            stateList, cityList, house2, house2Error, road2, road2Error, locality2, locality2Error, country2ID, country2Name, country2Error,
-            state2ID, state2Name, state2Error, city2ID, city2Name, city2Error, state2List, city2List, showQualificationList, animateQualification, animateSkills,
+            cityList, house2, house2Error, road2, road2Error, locality2, locality2Error, country2ID, country2Name, country2Error,
+            state2ID, state2Name, state2Error, city2ID, city2Name, city2Error, city2List, showQualificationList, animateQualification, animateSkills,
             qualificationList, showSkillsList, skillsList, selectedQualification, selectedSkills, languageList, showLanguageList, selectedLanguage,
-            screens, showScreensList, pincode, pincodeError, pincode2, pincode2Error, loading, baseURL
+            screens, showScreensList, pincode, pincodeError, pincode2, pincode2Error, loading, baseURL, dobMinDate, dobMaxDate, dobTimeStamp
         } = this.state;
         const apiData = JSON.parse(this.props.route.params.apiData);
         const projectName = apiData.projectName;
@@ -677,7 +694,19 @@ class Registration extends Component{
         const male = 'male';
         const female = 'female';
         const transgender = 'transgender';
-        //console.log("### EDIT DETAILS: ", projectName, designation, this.props.route.params.apiData)
+        let countryList = [];
+        countryList = Array.isArray(apiData.sectionData.dropdown.countries) && apiData.sectionData.dropdown.countries.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        let stateList = [];
+        stateList = Array.isArray(apiData.sectionData.dropdown.states) && apiData.sectionData.dropdown.states.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        let state2List = [];
+        state2List = Array.isArray(apiData.sectionData.dropdown.states) && apiData.sectionData.dropdown.states.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        console.log("### EDIT DETAILS: ", cityList)
         const qualificationStyle = {
             width: animateQualification.interpolate({
                 inputRange: [0, 1],
@@ -731,27 +760,25 @@ class Registration extends Component{
                                                     <Dropdown
                                                         containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42), getMarginTop(-1)]}
                                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
-                                                        label={'Select Salutation'}
-                                                        labelFontSize={fontSizeH4().fontSize - 3}
-                                                        labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
+                                                        placeholder={'Select Salutation*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
                                                         data={salutationData}
-                                                        valueExtractor={({id})=> id}
-                                                        labelExtractor={({name})=> name}
-                                                        onChangeText={(id, index, data) => {
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            console.log(item);
                                                             this.setState({
-                                                                salutationName: data[index]['name'], salutationID: id, salutationError: false 
+                                                                salutationName: item.name, salutationID: item.id, salutationError: false 
                                                             }, () => console.log("### SALVATION ID: ", this.state.salutationID))
                                                             this.dismissKeyboard();
                                                         }}
-                                                        value={salutationName}
-                                                        baseColor = {(salutationName)? colorTitle : '#C4C4C4'}
-                                                        //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
-                                                        fontSize = {(salutationName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                        value={salutationID}
                                                     />
                                                 </View>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" First Name "
+                                                        placeholder=" First Name* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={firstName}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -849,21 +876,24 @@ class Registration extends Component{
                                                     }, getWidthnHeight(87, 6.5)]}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
                                                     slideHorizontal={[0, getWidthnHeight(-34.5).width]}
-                                                    style={[{justifyContent: 'center'}, getWidthnHeight(87, 6.5)]}
-                                                    date={dob}
-                                                    minDate={`${minDate}-01`}
-                                                    maxDate={`${maxDate}-31`}
+                                                    style={[{justifyContent: 'center', alignItems: 'center'}, getWidthnHeight(87, 6.5)]}
+                                                    date={moment(dobTimeStamp).utc().toDate()}
+                                                    dateValue={dob}
+                                                    minDate={dobMinDate}
+                                                    maxDate={dobMaxDate}
                                                     mode="date"
-                                                    placeholder="Date of Birth"
+                                                    placeholder="Date of Birth*"
                                                     format="YYYY-MM-DD"
-                                                    onDateChange={(date) => {this.setState({dob: date, dobError: false}, () => {
-                                                        Keyboard.dismiss();
-                                                    })}}
+                                                    onDateChange={(date, fromTimeStamp) => {
+                                                        this.setState({dob: date, dobError: false,  dobTimeStamp: fromTimeStamp}, () => {
+                                                            Keyboard.dismiss();
+                                                        })
+                                                    }}
                                                 />
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Father's Name "
+                                                    placeholder=" Father's Name* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={fatherName}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -893,7 +923,7 @@ class Registration extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Mother's Name "
+                                                    placeholder=" Mother's Name* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={motherName}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1015,7 +1045,7 @@ class Registration extends Component{
                                                 <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                     <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(0)]}>
                                                         <AnimatedTextInput 
-                                                            placeholder=" Spouse Name "
+                                                            placeholder=" Spouse Name* "
                                                             placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                             value={spouseName}
                                                             slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1057,7 +1087,7 @@ class Registration extends Component{
                                                             minDate={`${currentYear - 75}-01-01`}
                                                             maxDate={`${moment().year()}-${moment().month() +1 }-${moment().date()}`}
                                                             mode="date"
-                                                            placeholder="Date of Marriage"
+                                                            placeholder="Date of Marriage*"
                                                             format="YYYY-MM-DD"
                                                             onDateChange={(date) => {this.setState({marriageDate: date, marriageDateError: false}, () => {
                                                                 Keyboard.dismiss();
@@ -1080,7 +1110,7 @@ class Registration extends Component{
                                                         }, getWidthnHeight(87, 6.5)]}
                                                         isVisible={showQualificationList}
                                                         toggle={() => this.setState({showQualificationList: false}, () => Keyboard.dismiss())}
-                                                        title={"Qualification"}
+                                                        title={"Qualification*"}
                                                         titleStyle={[{color: COLOR1}]}
                                                         checkBoxColor={COLOR1}
                                                         underLayColor={COLOR2}
@@ -1122,7 +1152,7 @@ class Registration extends Component{
                                                         }, getWidthnHeight(87, 6.5)]}
                                                         isVisible={showSkillsList}
                                                         toggle={() => this.setState({showSkillsList: false}, () => Keyboard.dismiss())}
-                                                        title={"Skills"}
+                                                        title={"Skills*"}
                                                         titleStyle={[{color: COLOR1}]}
                                                         checkBoxColor={COLOR1}
                                                         underLayColor={COLOR2}
@@ -1163,7 +1193,7 @@ class Registration extends Component{
                                                         }, getWidthnHeight(87, 6.5)]}
                                                         isVisible={showLanguageList}
                                                         toggle={() => this.setState({showLanguageList: false}, () => Keyboard.dismiss())}
-                                                        title={"Language"}
+                                                        title={"Language*"}
                                                         titleStyle={[{color: COLOR1}]}
                                                         checkBoxColor={COLOR1}
                                                         overLayColor={"rgb(19,111,232)"}
@@ -1280,7 +1310,7 @@ class Registration extends Component{
                                             <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(1.5)]}>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Mobile Number "
+                                                        placeholder=" Mobile Number* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={mobile1}
                                                         editable={(mobile1)? false : true}
@@ -1347,7 +1377,7 @@ class Registration extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" E-mail "
+                                                    placeholder=" E-mail* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={emailAddress}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1391,7 +1421,7 @@ class Registration extends Component{
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(1.5)]}>
                                                 <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(87), getMarginTop(1.5)]}>
                                                     <AnimatedTextInput 
-                                                        placeholder=" House Number "
+                                                        placeholder=" House Number* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={house}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1418,7 +1448,7 @@ class Registration extends Component{
                                                         style={[{borderColor: 'red', borderWidth: 0, borderRadius: 0, fontSize: (fontSizeH4().fontSize + 2)}, getWidthnHeight(52, 6.5), getMarginHorizontal(2)]}
                                                     />
                                                     <AnimatedTextInput 
-                                                        placeholder=" Pincode "
+                                                        placeholder=" Pincode* "
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={pincode}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1454,7 +1484,7 @@ class Registration extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Road/Street "
+                                                    placeholder=" Road/Street* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={road}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1483,7 +1513,7 @@ class Registration extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Locality/Area "
+                                                    placeholder=" Locality/Area* "
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={locality}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1512,30 +1542,30 @@ class Registration extends Component{
                                             </View>
                                             <View style={[{alignItems: 'flex-end'}, getWidthnHeight(93)]}>
                                                 <Dropdown
-                                                    containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(1.5)]}
-                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(20), getMarginTop(-2)]}
-                                                    labelFontSize={fontSizeH4().fontSize - 3}
-                                                    labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
-                                                    data={apiData.sectionData.dropdown.countries}
-                                                    valueExtractor={({id})=> id}
-                                                    labelExtractor={({name})=> name}
-                                                    onChangeText={(id, index, data) => {
+                                                    style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(3)]}
+                                                    containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                    placeholder='Select Country*'
+                                                    placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                    selectedTextStyle={[getMarginLeft(3)]}
+                                                    data={countryList}
+                                                    valueField={'id'}
+                                                    labelField={'name'}
+                                                    onChange={(item) => {
+                                                        console.log(item);
                                                         this.setState({
-                                                            countryName: data[index]['name'], countryID: id, countryError: false 
+                                                            countryName: item.name, countryID: item.id, countryError: false 
                                                         }, () => console.log("### COUNTRY ID: ", this.state.countryID))
                                                         this.dismissKeyboard();
                                                     }}
-                                                    value={countryName}
-                                                    baseColor = {(countryName)? colorTitle : '#C4C4C4'}
-                                                    //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
-                                                    fontSize = {(countryName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                    value={countryID}
                                                 />
                                             </View>
                                             <View 
                                                 style={[{
-                                                    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', ...Platform.select({ios: {zIndex: 39}})
+                                                    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'
                                             }, getMarginTop(0), getWidthnHeight(90)]}>
-                                                <SearchableDropDown 
+                                                {/* <SearchableDropDown 
                                                     placeholder=" State* "
                                                     data={apiData.sectionData.dropdown.states}
                                                     value={stateName}
@@ -1559,8 +1589,34 @@ class Registration extends Component{
                                                             this.cities(this.state.stateID, 'permanent');
                                                         })
                                                     }}
-                                                />
-                                                <SearchableDropDown 
+                                                /> */}
+                                                <View style={[{
+                                                    borderColor: (submit && stateError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                    borderStyle: (submit && stateError)? 'dashed' : 'solid', borderWidth: (submit && stateError)? 2 : 1
+                                                }, getWidthnHeight(42, 6.5)]}>
+                                                    <Dropdown
+                                                        search
+                                                        searchPlaceholder="Search..."
+                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                        placeholder={'State*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                        data={stateList}
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            console.log(item);
+                                                            this.setState({
+                                                                stateName: item.name, stateID: item.id, stateError: false,
+                                                                cityList: [], cityID: null, cityError: true 
+                                                            }, () => this.cities(this.state.stateID, 'permanent'));
+                                                            this.dismissKeyboard();
+                                                        }}
+                                                        value={stateID}
+                                                    />
+                                                </View>
+                                                {/* <SearchableDropDown 
                                                     placeholder=" City* "
                                                     data={cityList}
                                                     value={cityName}
@@ -1581,7 +1637,32 @@ class Registration extends Component{
                                                         this.setState({cityID: id, cityName: name, cityError: false}, () => {
                                                         })
                                                     }}
-                                                />
+                                                /> */}
+                                                <View style={[{
+                                                    borderColor: (submit && cityError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                    borderStyle: (submit && cityError)? 'dashed' : 'solid', borderWidth: (submit && cityError)? 2 : 1,
+                                                }, getWidthnHeight(42, 6.5)]}>
+                                                    <Dropdown
+                                                        search
+                                                        searchPlaceholder="Search..."
+                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                        placeholder={'City*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                        data={cityList}
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            console.log(item);
+                                                            this.setState({
+                                                                cityName: item.name, cityID: item.id, cityError: false 
+                                                            });
+                                                            this.dismissKeyboard();
+                                                        }}
+                                                        value={cityID}
+                                                    />
+                                                </View>
                                             </View>
                                             <View style={[{backgroundColor: 'rgba(196, 196, 196, 0.5)', height: 1}, getWidthnHeight(87), getMarginTop(3)]}/>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginVertical(1)]}>
@@ -1611,7 +1692,7 @@ class Registration extends Component{
                                                     <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(1.5)]}>
                                                         <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(87), getMarginTop(1.5)]}>
                                                             <AnimatedTextInput 
-                                                                placeholder=" House Number "
+                                                                placeholder=" House Number* "
                                                                 placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                                 value={house2}
                                                                 slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1638,7 +1719,7 @@ class Registration extends Component{
                                                                 style={[{borderColor: 'red', borderWidth: 0, borderRadius: 0, fontSize: (fontSizeH4().fontSize + 2)}, getWidthnHeight(52, 6.5), getMarginHorizontal(2)]}
                                                             />
                                                             <AnimatedTextInput 
-                                                                placeholder=" Pincode "
+                                                                placeholder=" Pincode* "
                                                                 placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                                 value={pincode2}
                                                                 slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1674,7 +1755,7 @@ class Registration extends Component{
                                                     </View>
                                                     <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                         <AnimatedTextInput 
-                                                            placeholder=" Road/Street "
+                                                            placeholder=" Road/Street* "
                                                             placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                             value={road2}
                                                             slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1703,7 +1784,7 @@ class Registration extends Component{
                                                     </View>
                                                     <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                         <AnimatedTextInput 
-                                                            placeholder=" Locality/Area "
+                                                            placeholder=" Locality/Area* "
                                                             placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                             value={locality2}
                                                             slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1732,30 +1813,30 @@ class Registration extends Component{
                                                     </View>
                                                     <View style={[{alignItems: 'flex-end'}, getWidthnHeight(93)]}>
                                                         <Dropdown
-                                                            containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(1.5)]}
-                                                            inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(20), getMarginTop(-2)]}
-                                                            labelFontSize={fontSizeH4().fontSize - 3}
-                                                            labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
-                                                            data={apiData.sectionData.dropdown.countries}
-                                                            valueExtractor={({id})=> id}
-                                                            labelExtractor={({name})=> name}
-                                                            onChangeText={(id, index, data) => {
+                                                            style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(3)]}
+                                                            containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                            inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                            placeholder='Select Country*'
+                                                            placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                            selectedTextStyle={[getMarginLeft(3)]}
+                                                            data={countryList}
+                                                            valueField={'id'}
+                                                            labelField={'name'}
+                                                            onChange={(item) => {
+                                                                console.log(item);
                                                                 this.setState({
-                                                                    country2Name: data[index]['name'], country2ID: id, country2Error: false 
-                                                                }, () => console.log("### COUNTRY ID: ", this.state.country2ID))
+                                                                    country2Name: item.name, country2ID: item.id, country2Error: false 
+                                                                }, () => console.log("### COUNTRY 2 ID: ", this.state.country2ID))
                                                                 this.dismissKeyboard();
                                                             }}
-                                                            value={country2Name}
-                                                            baseColor = {(country2Name)? colorTitle : '#C4C4C4'}
-                                                            //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
-                                                            fontSize = {(country2Name)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                            value={country2ID}
                                                         />
                                                     </View>
                                                     <View 
                                                         style={[{
-                                                            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', ...Platform.select({ios: {zIndex: 39}})
+                                                            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'
                                                     }, getMarginTop(0), getWidthnHeight(90)]}>
-                                                        <SearchableDropDown 
+                                                        {/* <SearchableDropDown 
                                                             placeholder=" State* "
                                                             data={apiData.sectionData.dropdown.states}
                                                             value={state2Name}
@@ -1779,8 +1860,34 @@ class Registration extends Component{
                                                                     this.cities(this.state.state2ID, 'correspondence');
                                                                 })
                                                             }}
-                                                        />
-                                                        <SearchableDropDown 
+                                                        /> */}
+                                                        <View style={[{
+                                                            borderColor: (submit && state2Error)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                            borderStyle: (submit && state2Error)? 'dashed' : 'solid', borderWidth: (submit && state2Error)? 2 : 1
+                                                        }, getWidthnHeight(42, 6.5)]}>
+                                                            <Dropdown
+                                                                search
+                                                                searchPlaceholder="Search..."
+                                                                containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                                inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                                placeholder={'State*'}
+                                                                placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                selectedTextStyle={[getMarginLeft(3)]}
+                                                                data={state2List}
+                                                                valueField={'id'}
+                                                                labelField={'name'}
+                                                                onChange={(item) => {
+                                                                    console.log(item);
+                                                                    this.setState({
+                                                                        state2Name: item.name, state2ID: item.id, state2Error: false,
+                                                                        city2List: [], city2ID: null, city2Error: true 
+                                                                    }, () => this.cities(this.state.state2ID, 'correspondence'));
+                                                                    this.dismissKeyboard();
+                                                                }}
+                                                                value={state2ID}
+                                                            />
+                                                        </View>
+                                                        {/* <SearchableDropDown 
                                                             placeholder=" City* "
                                                             data={city2List}
                                                             value={city2Name}
@@ -1801,7 +1908,32 @@ class Registration extends Component{
                                                                 this.setState({city2ID: id, city2Name: name, city2Error: false}, () => {
                                                                 })
                                                             }}
-                                                        />
+                                                        /> */}
+                                                        <View style={[{
+                                                            borderColor: (submit && city2Error)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                            borderStyle: (submit && city2Error)? 'dashed' : 'solid', borderWidth: (submit && city2Error)? 2 : 1,
+                                                        }, getWidthnHeight(42, 6.5)]}>
+                                                            <Dropdown
+                                                                search
+                                                                searchPlaceholder="Search..."
+                                                                containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                                inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                                placeholder={'City*'}
+                                                                placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                selectedTextStyle={[getMarginLeft(3)]}
+                                                                data={city2List}
+                                                                valueField={'id'}
+                                                                labelField={'name'}
+                                                                onChange={(item) => {
+                                                                    console.log(item);
+                                                                    this.setState({
+                                                                        city2Name: item.name, city2ID: item.id, city2Error: false 
+                                                                    });
+                                                                    this.dismissKeyboard();
+                                                                }}
+                                                                value={city2ID}
+                                                            />
+                                                        </View>
                                                     </View>
                                                 </View>
                                             )}

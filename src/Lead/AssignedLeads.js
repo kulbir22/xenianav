@@ -13,7 +13,7 @@ import {
   CommonModal, IOS_StatusBar, LeadInfoModal, getWidthnHeight, DismissKeyboard, WaveHeader, 
   RoundButton, getMarginTop, getMarginBottom, getMarginLeft, LeadCommonCard, SearchBar, Loader,
   Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const colorBase = '#25A2F9';

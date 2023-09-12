@@ -14,7 +14,7 @@ import { extractBaseURL } from '../api/BaseURL';
 import { 
     CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, statusBarGradient, AnimateDateLabel,
     fontSizeH4, getMarginTop, Spinner, getMarginLeft, getMarginVertical, getMarginBottom
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const colorTitle = '#0B8EE8';

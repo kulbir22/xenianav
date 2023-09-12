@@ -17,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import {drawerMenuWidth} from '../api/BaseURL';
-import {getWidthnHeight, IOS_StatusBar, fontSizeH4, getMarginRight, getMarginTop, getMarginLeft, GradientIcon, getMarginBottom} from '../KulbirComponents/common';
+import {getWidthnHeight, IOS_StatusBar, fontSizeH4, getMarginRight, getMarginTop, getMarginLeft, GradientIcon, getMarginBottom} from '../NewComponents/common';
 
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 

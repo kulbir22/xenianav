@@ -11,7 +11,7 @@ import mommaDino from '../Image/mommaDino.png';
 import { 
     fontSizeH2, fontSizeH3, fontSizeH4, getMarginBottom, getMarginLeft, getMarginTop, 
     getMarginVertical, getWidthnHeight, GradientIcon
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 class LevelSelection extends Component{
     constructor(props){

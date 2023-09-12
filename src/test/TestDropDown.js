@@ -2,7 +2,7 @@
 // import {View, Text, TextInput, Animated, StyleSheet, ScrollView, FlatList, Platform} from 'react-native';
 // import { Keyboard } from 'react-native';
 // import {TouchableOpacity} from 'react-native-gesture-handler';
-// import {getWidthnHeight, getMarginTop, fontSizeH4, getMarginLeft, getMarginHorizontal} from '../KulbirComponents/common';
+// import {getWidthnHeight, getMarginTop, fontSizeH4, getMarginLeft, getMarginHorizontal} from '../NewComponents/common';
 
 // const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 

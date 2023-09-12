@@ -94,7 +94,7 @@ import HTML from './src/test/html';
 
 import { store } from './src/store/redux/store';
 
-import { fontSizeH4, getMarginLeft, getMarginRight, getMarginTop, getWidthnHeight } from './src/KulbirComponents/common';
+import { fontSizeH4, getMarginLeft, getMarginRight, getMarginTop, getWidthnHeight } from './src/NewComponents/common';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();

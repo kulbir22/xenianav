@@ -14,7 +14,7 @@ import {
     getWidthnHeight, getMarginTop, getMarginLeft, fontSizeH4, ChoppedButton, getMarginVertical, getMarginBottom,
     MaskedGradientText, fontSizeH3, getMarginHorizontal, AnimatedTextInput, Spinner, DismissKeyboard, IOS_StatusBar, 
     statusBarGradient, AnimateDateLabel
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 class SerialNumber extends Component{
     constructor(props){

@@ -19,7 +19,7 @@ import {extractBaseURL, getLeadDownloadAPI} from '../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, getWidthnHeight, getMarginTop, FloatingTitleTextInputField, WaveHeader, 
     RoundButton, getMarginVertical, DownloadModal, Spinner, getMarginLeft
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const colorBase = '#25A2F9';
 

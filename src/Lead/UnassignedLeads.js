@@ -13,7 +13,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import {
   CommonModal, IOS_StatusBar, getWidthnHeight, DismissKeyboard, LeadInfoModal, getMarginTop,
    Spinner, WaveHeader, RoundButton, UnassignLeadCard, getMarginLeft, SearchBar, LoadingModal
-  } from '../KulbirComponents/common';
+  } from '../NewComponents/common';
 
 const colorBase = '#25A2F9';
 const modalColor = '#1079D5';

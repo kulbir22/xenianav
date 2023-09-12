@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ListItem, Avatar} from 'react-native-elements';
 import {
     getWidthnHeight, WaveHeader, getMarginTop, getMarginLeft, fontSize_H3, fontSizeH4, getMarginHorizontal, getMarginRight,
-    IOS_StatusBar, statusBarGradient, CustomTextInput, fontSizeH3, getMarginVertical, getMarginBottom, AlertBox, Spinner} from '../KulbirComponents/common';
+    IOS_StatusBar, statusBarGradient, CustomTextInput, fontSizeH3, getMarginVertical, getMarginBottom, AlertBox, Spinner} from '../NewComponents/common';
 import {extractBaseURL} from '../api/BaseURL';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';

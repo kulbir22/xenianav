@@ -51,7 +51,7 @@ import Dialog, {
   ScaleAnimation,
 } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal} from '../KulbirComponents/common';
+import {CommonModal} from '../NewComponents/common';
 
 const FadeInView = (props) => {
     const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0

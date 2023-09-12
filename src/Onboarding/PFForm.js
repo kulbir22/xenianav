@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import DocumentPicker from 'react-native-document-picker'
 import moment from 'moment';
-import { Dropdown } from 'react-native-material-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import AntdesignIcons from 'react-native-vector-icons/AntDesign';
 import ImagePicker from 'react-native-image-crop-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,8 +19,8 @@ import {
     getWidthnHeight, IOS_StatusBar, getMarginTop, fontSizeH4, fontSizeH3, AnimatedTextInput, getMarginHorizontal,
     DismissKeyboard, GradientIcon, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, GradientText,
     SearchableDropDown, AnimateDateLabel, Slider, getMarginRight, CheckList, LanguageSelection, ScreensModal, fontSizeH2,
-    BasicChoppedButton, MaskedGradientText, stateList, cities, Spinner, RadioEnable, RadioDisable
-} from '../KulbirComponents/common';
+    BasicChoppedButton, MaskedGradientText, stateList, cities, Spinner, RadioEnable, RadioDisable, DateTimePicker
+} from '../NewComponents/common';
 import {fetchBaseURL, savedToken} from '../api/BaseURL';
 
 const COLOR1 = "#039FFD";
@@ -33,6 +33,23 @@ const aadharCard = 'aadhar';
 class PFForm extends Component{
     constructor(props){
         super(props)
+        let year = `${moment().year()}`;
+        let month = `${moment().month() + 1}`;
+        month = (month < 10)? `0${month}` : month;
+        let initialDate = '1';
+        initialDate = (initialDate < 10)? `0${initialDate}` : initialDate;
+        let currentDate = `${year}-${month}-${initialDate}`;
+        console.log("!!@@@ DATE: ", currentDate)
+        // currentDate = moment(currentDate, "YYYY-MM-DD").subtract(1, 'month').format("YYYY-MM-DD");
+        const fromStartDate = moment(currentDate, "YYYY-MM-DD").subtract(50, 'years').format("YYYY-MM-DD");
+        const currentTime = "12:00 AM";
+        const currentDateTime = `${currentDate} ${currentTime}`;
+        let fromMinUtc = moment(currentDate, "YYYY-MM-DD").subtract(25, 'years').format("YYYY-MM-DD");
+        // let toMaxUtc = moment(currentDate, "YYYY-MM-DD").add(25, 'years').format("YYYY-MM-DD");
+        fromMinUtc = moment(`${fromMinUtc} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
+        // toMaxUtc = moment(`${toMaxUtc} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const utcTimeStamp = moment(currentDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const fromUtcTime = moment(`${fromStartDate} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
         this.state = {
             submit: false,
             baseURL: null,
@@ -48,6 +65,9 @@ class PFForm extends Component{
             pfAccountError: true,
             dateExit: '',
             dateExitError: true,
+            dETimeStamp: moment().valueOf(),
+            dEMinDate: fromUtcTime,
+            showDEPicker: false,
             certificateNo: '',
             certificateNoError: true,
             paymentOrder: '',
@@ -60,8 +80,16 @@ class PFForm extends Component{
             passportNumberError: true,
             validFrom: '',
             validFromError: true,
+            validFromTimeStamp: moment().valueOf(),
+            validFromTime: '12:00 AM',
+            validfromMinDate: fromMinUtc,
+            showFromDatePicker: false,
             validTo: '',
             validToError: true,
+            validToTimeStamp: moment().valueOf(),
+            validToTime: '11:59 PM',
+            validToMinDate: fromMinUtc,
+            showToDatePicker: false,
             place: '',
             placeError: true,
             currentDate: function(){
@@ -202,6 +230,7 @@ class PFForm extends Component{
         {
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${secretToken}`
             }
         }).then((response) => {
@@ -244,19 +273,32 @@ class PFForm extends Component{
         const {
             loading, showScreensList, selectName, selectEPF, selectEPS, uan, uanError, submit, pfAccount, pfAccountError, dateExit, dateExitError,
             certificateNo, certificateNoError, paymentOrder, paymentOrderError, sliderState, validFrom, validFromError, validTo, validToError,
-            passportNumber, passportNumberError, countryID, countryName, countryError, place, placeError, baseURL, screens
+            passportNumber, passportNumberError, countryID, countryName, countryError, place, placeError, baseURL, screens, dEMinDate, dETimeStamp,
+            showDEPicker, showFromDatePicker, showToDatePicker, validfromMinDate, validFromTimeStamp, validToTimeStamp
         } = this.state;
         const buttonColor = 'rgb(19,111,232)';
         const currentYear = moment().year();
-        const validFromMaxDate = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
+        const presentDate = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
         const maxDate = `${currentYear + 20}-${moment().month() + 1}-${moment().date()}`;
+        const dEMax = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
+        const dEMaxDate = moment(`${dEMax} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
         const apiData = JSON.parse(this.props.route.params.apiData);
         let date = moment().date();
         date = (date < 10)? `0${date}` : date;
+        const countryList = apiData.sectionData.dropdown.countries.map((item) => {
+            return {
+                ...item, id: `${item.id}`
+            }
+        });
+        // console.log('@@@@@ COUNTRY LIST: ', countryList);
         const bankDetails = JSON.parse(apiData.sectionData.dropdown.bankDetails.professional);
         const personalDetails = JSON.parse(apiData.sectionData.dropdown.personalDetails.personal);
         const currentDate = this.state.currentDate();
         const maxDateofExit = `${moment().year()}-${(moment().month() + 1)}-${(moment().date() - 1)}`;
+        let validFromMaxDate = moment(`${presentDate} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const validToMinDate = moment(`${validFrom} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
+        let validToMaxDate = moment(validFrom, "YYYY-MM-DD").add(25, 'years').format("YYYY-MM-DD");
+        validToMaxDate = moment(`${validToMaxDate} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
         return (
             <SafeAreaView style={[{alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: '#F6F6F6', flex: 1}]}>
                 <StatusBar hidden={false} barStyle="dark-content" />
@@ -567,7 +609,7 @@ class PFForm extends Component{
                                                                 />
                                                             </View>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
-                                                                <AnimateDateLabel
+                                                                {/* <AnimateDateLabel
                                                                     containerColor={[(submit && dateExitError)? 'red' : '#C4C4C4', (submit && dateExitError)? 'red' : '#C4C4C4']}
                                                                     containerBorderWidth={[(submit && dateExitError)? 2 : 1, 1]}
                                                                     containerStyle={[{
@@ -585,7 +627,54 @@ class PFForm extends Component{
                                                                     onDateChange={(date) => {this.setState({dateExit: date, dateExitError: false}, () => {
                                                                         Keyboard.dismiss();
                                                                     })}}
-                                                                />
+                                                                /> */}
+                                                                <TouchableOpacity 
+                                                                    onPress={() => this.setState({showDEPicker: !showDEPicker})}
+                                                                >
+                                                                    <View 
+                                                                        style={[{
+                                                                            alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                            borderColor: (submit && dateExitError)? 'red' : '#C4C4C4', 
+                                                                            borderWidth: (submit && dateExitError)? 2 : 1,
+                                                                            borderStyle: (submit && dateExitError)? 'dashed' : 'solid'
+                                                                        }, getWidthnHeight(80, 6.5)]}>
+                                                                        <Text style={[{color: dateExit? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{dateExit || 'Select Date'}</Text>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                                {(showDEPicker) && (
+                                                                    <DateTimePicker 
+                                                                        styleBox={{flex: 1}}
+                                                                        date={moment(dETimeStamp).utc().toDate()}
+                                                                        androidMode='default'
+                                                                        mode='date'
+                                                                        is24Hour={false}
+                                                                        placeholder='Select Date'
+                                                                        format='YYYY-MM-DD'
+                                                                        minDate={dEMinDate}
+                                                                        maxDate={dEMaxDate}
+                                                                        onDateChange={(event, newDate) => {
+                                                                            if(event.type === "dismissed"){
+                                                                                this.setState({showDEPicker: !showDEPicker})
+                                                                                return;
+                                                                            }
+                                                                            this.setState({showDEPicker: !showDEPicker})
+                                                                            const dETimeStamp = event.nativeEvent.timestamp;
+                                                                            this.setState({
+                                                                                dateExit: moment(newDate).format("YYYY-MM-DD"), dETimeStamp,
+                                                                                dateExitError: false
+                                                                            });
+                                                                            Keyboard.dismiss();
+                                                                        }} 
+                                                                    />
+                                                                )}
+                                                                <View style={[{
+                                                                    position: 'absolute',
+                                                                    backgroundColor: '#FFFFFF',
+                                                                    left: 0,
+                                                                    marginLeft: getWidthnHeight(8).width
+                                                                }, getMarginTop(-1)]}>
+                                                                    <Text style={[{fontSize: (fontSizeH4().fontSize - 3), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>Date of Exit</Text>
+                                                                </View>
                                                             </View>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(87), getMarginTop(2)]}>
                                                                 <AnimatedTextInput 
@@ -680,7 +769,7 @@ class PFForm extends Component{
                                                     <View style={{alignItems: 'center'}}>
                                                         <View style={[{borderWidth: 1, borderColor: '#C4C4C4', borderRadius: getWidthnHeight(1).width, alignItems: 'center'}, getMarginTop(2), getMarginBottom(1), getWidthnHeight(87, 36)]}>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(87), getMarginTop(2)]}>
-                                                                <Dropdown
+                                                                {/* <Dropdown
                                                                     containerStyle={[{
                                                                         borderColor: (submit && countryError)? 'red' : '#C4C4C4', borderWidth: (submit && countryError)? 2 : 1, 
                                                                         borderStyle: (submit && countryError)? 'dashed' : 'solid', justifyContent: 'center', borderRadius: getWidthnHeight(1).width
@@ -688,7 +777,7 @@ class PFForm extends Component{
                                                                     inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(80)]}
                                                                     labelFontSize={fontSizeH4().fontSize - 3}
                                                                     labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
-                                                                    data={apiData.sectionData.dropdown.countries}
+                                                                    data={countryList}
                                                                     valueExtractor={({id})=> id}
                                                                     label={"Country"}
                                                                     labelExtractor={({name})=> name}
@@ -702,6 +791,27 @@ class PFForm extends Component{
                                                                     baseColor = {(countryName)? colorTitle : '#C4C4C4'}
                                                                     //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                     fontSize = {(countryName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                /> */}
+                                                                <Dropdown
+                                                                    style={[{
+                                                                        borderColor: (submit && countryError)? 'red' : '#C4C4C4', borderWidth: (submit && countryError)? 2 : 1, 
+                                                                        borderStyle: (submit && countryError)? 'dashed' : 'solid', justifyContent: 'center', borderRadius: getWidthnHeight(1).width
+                                                                    }, getWidthnHeight(80, 6.5)]}
+                                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }]}
+                                                                    placeholder={'Country'}
+                                                                    placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                    selectedTextStyle={[getMarginLeft(3)]}
+                                                                    data={countryList}
+                                                                    valueField={'id'}
+                                                                    labelField={'name'}
+                                                                    onChange={(item) => {
+                                                                        // console.log(item);
+                                                                        this.setState({
+                                                                            countryName: item.name, countryID: item.id, countryError: false
+                                                                        });
+                                                                        this.dismissKeyboard();
+                                                                    }}
+                                                                    value={countryID}
                                                                 />
                                                             </View>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(87), getMarginTop(2)]}>
@@ -737,7 +847,7 @@ class PFForm extends Component{
                                                                 />
                                                             </View>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
-                                                                <AnimateDateLabel
+                                                                {/* <AnimateDateLabel
                                                                     containerColor={[(submit && validFromError)? 'red' : '#C4C4C4', (submit && validFromError)? 'red' : '#C4C4C4']}
                                                                     containerBorderWidth={[(submit && validFromError)? 2 : 1, 1]}
                                                                     containerStyle={[{
@@ -767,10 +877,57 @@ class PFForm extends Component{
                                                                             })
                                                                         }
                                                                     }}
-                                                                />
+                                                                /> */}
+                                                                <TouchableOpacity 
+                                                                    onPress={() => this.setState({showFromDatePicker: !showFromDatePicker})}
+                                                                >
+                                                                    <View 
+                                                                        style={[{
+                                                                            alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                            borderColor: (submit && validFromError)? 'red' : '#C4C4C4',
+                                                                            borderWidth: (submit && validFromError)? 2 : 1,
+                                                                            borderStyle: (submit && validFromError)? 'dashed' : 'solid'
+                                                                        }, getWidthnHeight(80, 6.5)]}>
+                                                                        <Text style={[{color: validFrom? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{validFrom || 'Select Date'}</Text>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                                {(showFromDatePicker) && (
+                                                                    <DateTimePicker 
+                                                                        styleBox={{flex: 1}}
+                                                                        date={moment(validFromTimeStamp).utc().toDate()}
+                                                                        androidMode='default'
+                                                                        mode='date'
+                                                                        is24Hour={false}
+                                                                        placeholder='Select Date'
+                                                                        format='YYYY-MM-DD'
+                                                                        minDate={validfromMinDate}
+                                                                        maxDate={validFromMaxDate}
+                                                                        onDateChange={(event, newDate) => {
+                                                                            if(event.type === "dismissed"){
+                                                                                this.setState({showFromDatePicker: !showFromDatePicker})
+                                                                                return;
+                                                                            }
+                                                                            this.setState({showFromDatePicker: !showFromDatePicker})
+                                                                            const validFromTimeStamp = event.nativeEvent.timestamp;
+                                                                            this.setState({
+                                                                                validFrom: moment(newDate).format("YYYY-MM-DD"), validFromTimeStamp,
+                                                                                showToDatePicker: false, validFromError: false,
+                                                                            });
+                                                                            Keyboard.dismiss();
+                                                                        }} 
+                                                                    />
+                                                                )}
+                                                                <View style={[{
+                                                                    position: 'absolute',
+                                                                    backgroundColor: '#FFFFFF',
+                                                                    left: 0,
+                                                                    marginLeft: getWidthnHeight(8).width
+                                                                }, getMarginTop(-1)]}>
+                                                                    <Text style={[{fontSize: (fontSizeH4().fontSize - 3), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>Validity of passport - From</Text>
+                                                                </View>
                                                             </View>
                                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
-                                                                <AnimateDateLabel
+                                                                {/* <AnimateDateLabel
                                                                     containerColor={[(submit && validToError)? 'red' : '#C4C4C4', (submit && validToError)? 'red' : '#C4C4C4']}
                                                                     containerBorderWidth={[(submit && validToError)? 2 : 1, 1]}
                                                                     containerStyle={[{
@@ -803,7 +960,55 @@ class PFForm extends Component{
                                                                             })
                                                                         }
                                                                     }}
-                                                                />
+                                                                /> */}
+                                                                <TouchableOpacity 
+                                                                    onPress={() => this.setState({showToDatePicker: !showToDatePicker})}
+                                                                    disabled={validFromError? true : false}
+                                                                >
+                                                                    <View 
+                                                                        style={[{
+                                                                            alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                            borderColor: (submit && validToError)? 'red' : '#C4C4C4',
+                                                                            borderWidth: (submit && validToError)? 2 : 1,
+                                                                            borderStyle: (submit && validToError)? 'dashed' : 'solid'
+                                                                        }, getWidthnHeight(80, 6.5)]}>
+                                                                        <Text style={[{color: validTo? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{validTo || 'Select Date'}</Text>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                                {(showToDatePicker) && (
+                                                                    <DateTimePicker 
+                                                                        styleBox={{flex: 1}}
+                                                                        date={moment(validToTimeStamp).utc().toDate()}
+                                                                        androidMode='default'
+                                                                        mode='date'
+                                                                        is24Hour={false}
+                                                                        placeholder='Select Date'
+                                                                        format='YYYY-MM-DD'
+                                                                        minDate={validToMinDate}
+                                                                        maxDate={validToMaxDate}
+                                                                        onDateChange={(event, newDate) => {
+                                                                            if(event.type === "dismissed"){
+                                                                                this.setState({showToDatePicker: !showToDatePicker})
+                                                                                return;
+                                                                            }
+                                                                            this.setState({showToDatePicker: !showToDatePicker})
+                                                                            const validToTimeStamp = event.nativeEvent.timestamp;
+                                                                            this.setState({
+                                                                                validTo: moment(newDate).format("YYYY-MM-DD"), validToTimeStamp,
+                                                                                showToDatePicker: false, validToError: false,
+                                                                            });
+                                                                            Keyboard.dismiss();
+                                                                        }} 
+                                                                    />
+                                                                )}
+                                                                <View style={[{
+                                                                    position: 'absolute',
+                                                                    backgroundColor: '#FFFFFF',
+                                                                    left: 0,
+                                                                    marginLeft: getWidthnHeight(8).width
+                                                                }, getMarginTop(-1)]}>
+                                                                    <Text style={[{fontSize: (fontSizeH4().fontSize - 3), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>Validity of passport - To</Text>
+                                                                </View>
                                                             </View>
                                                         </View>
                                                     </View>
@@ -1007,7 +1212,20 @@ const styles = StyleSheet.create({
         elevation: 10,
         borderColor: 'red',
         borderWidth: 0
-    }
+    },
+    forDate: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        justifyContent: 'center', 
+        //alignSelf: 'center', 
+        borderColor: 'black', 
+        borderWidth: 0, 
+        marginTop: getMarginTop(-1).marginTop, 
+        width: 50, 
+        height: 16,
+        // marginLeft: 10,
+        left: getWidthnHeight(8).width
+    },
 })
 
 export default PFForm;

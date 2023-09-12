@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {getWidthnHeight} from '../KulbirComponents/common';
+import {getWidthnHeight} from '../NewComponents/common';
 //////////////////////////////////////////////////////////////////////////////////////
 //LIVE SERVER
 export const login = 'http://www.erp.xeamventures.com/api/v1';

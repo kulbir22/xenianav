@@ -5,7 +5,7 @@ import {Header} from './Header';
 import {
     getWidthnHeight, getMarginTop, getMarginLeft, fontSizeH4, ChoppedButton, getMarginVertical, getMarginBottom,
     MaskedGradientText, fontSizeH3, IOS_StatusBar, statusBarGradient
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 class CouponsLeft extends Component{
     constructor(props){

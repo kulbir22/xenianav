@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, IOS_StatusBar, WaveHeader} from '../KulbirComponents/common';
+import {CommonModal, IOS_StatusBar, WaveHeader} from '../NewComponents/common';
 
 // import Base_url from './Base_url';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

@@ -4,7 +4,6 @@ import {Text, TextInput, Alert} from 'react-native';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 
-// import PushNotificationIOS from '@react-native-community/push-notification-ios';
 // import PushNotification from "react-native-push-notification";
 import reducers from './reducers';
 import RouterComponent from './Router';

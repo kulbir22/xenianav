@@ -30,7 +30,7 @@ import Dialog, {
   ScaleAnimation,
 } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, Spinner, getMarginLeft} from '../KulbirComponents/common';
+import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, Spinner, getMarginLeft} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class RequestedDateExtensionList extends Component {

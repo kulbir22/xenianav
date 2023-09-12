@@ -16,7 +16,7 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Utils from '../Utils';
 import {extractBaseURL} from '../api/BaseURL';
-import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft, ModalAlert} from '../KulbirComponents/common/';
+import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft, ModalAlert} from '../NewComponents/common';
 import { cameraFile, setReloadHome } from '../store/redux/reducer';
 import appConfig from '../../app.json';
 

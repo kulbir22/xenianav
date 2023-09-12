@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Animated, View, TouchableOpacity, StyleSheet} from 'react-native';
-import {getWidthnHeight, getMarginLeft, getMarginTop} from '../KulbirComponents/common';
+import {getWidthnHeight, getMarginLeft, getMarginTop} from '../NewComponents/common';
 
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 

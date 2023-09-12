@@ -15,7 +15,7 @@ import GradientButton from '../Components/Gradient button'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import {extractBaseURL} from '../api/BaseURL';
-import {DateTimePicker, CommonModal, IOS_StatusBar, WaveHeader, Spinner, getMarginLeft, getWidthnHeight, fontSizeH4, getMarginTop, getMarginHorizontal} from '../KulbirComponents/common';
+import {DateTimePicker, CommonModal, IOS_StatusBar, WaveHeader, Spinner, getMarginLeft, getWidthnHeight, fontSizeH4, getMarginTop, getMarginHorizontal} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class TaskDateExtension extends Component {

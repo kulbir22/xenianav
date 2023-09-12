@@ -13,7 +13,7 @@ import {
   CommonModal, getWidthnHeight, DismissKeyboard, LeadInfoModal, WaveHeader, 
   RoundButton, getMarginTop, getMarginBottom, getMarginLeft, LeadCommonCard,
   SearchBar, Loader, IOS_StatusBar, Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import { Platform } from 'react-native';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

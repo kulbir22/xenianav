@@ -16,7 +16,7 @@ import {
     CommonModal, IOS_StatusBar, getMarginTop, getMarginBottom, getWidthnHeight,fontSizeH4, Spinner,
     getMarginVertical, DateSelector, WaveHeader, fontSizeH3, ItineraryModal, statusBarGradient,
     DismissKeyboard, getMarginLeft, Date, MySwitch, getMarginRight, getMarginHorizontal
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {extractBaseURL} from '../api/BaseURL';
 const AnimateTextInput = Animated.createAnimatedComponent(TextInput);
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);

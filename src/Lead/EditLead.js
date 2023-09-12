@@ -29,7 +29,7 @@ import {
   CommonModal, IOS_StatusBar, getMarginTop, getMarginBottom, getWidthnHeight, getMarginLeft,
   FloatingTitleTextInputField, getMarginVertical, DateSelector, DateTimePicker, Spinner,
   TimePicker, RoundButton, RadioEnable, RadioDisable, AlertBox, DownloadModal, fontSizeH4
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {cameraFile, show_HideTimePicker, prebidTime} from '../store/redux/reducer';
 
 //const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

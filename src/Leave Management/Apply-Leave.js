@@ -11,12 +11,13 @@ import axios from 'axios';
 import DocumentPicker from 'react-native-document-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import { Dropdown } from 'react-native-material-dropdown';
+// import { Dropdown } from 'react-native-material-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import {extractBaseURL, login} from '../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, TimePicker, Spinner, getMarginTop, getMarginLeft, fontSizeH4,
     fontSizeH3, AnimatedTextInput, getMarginHorizontal, RadioEnable, RadioDisable, getMarginBottom, getMarginRight, DateTimePicker
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const colorTitle = '#039FFD';
 
@@ -205,7 +206,9 @@ const colorTitle = '#039FFD';
             const leave_types = success.leave_data.leave_types;
             const countries = success.leave_data.countries;
             const states = success.leave_data.states;
-            const departments = success.leave_data.departments;
+            const departments = success.leave_data.departments.map((item) => {
+                return { ...item, id: `${item.id}` };
+            });
             // console.log(leave_types)
             this.setState({
                 leave_types: leave_types, countries: countries, states:states, departments:departments
@@ -729,25 +732,26 @@ const colorTitle = '#039FFD';
                                 <View style={{
                                     flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: getWidthnHeight(93).width
                                 }}>
-                                    <View style={[{alignItems: 'center', borderWidth: 1,borderColor: '#C4C4C4'}, getWidthnHeight(42, 6.5)]}>
+                                    <View style={[{alignItems: 'center', borderWidth: 1, borderColor: '#C4C4C4'}, getWidthnHeight(42, 6.5)]}>
                                         <Dropdown
-                                            containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42), getMarginTop(-1)]}
-                                            inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
-                                            //dropdownPosition={-5}
-                                            //itemTextStyle={[getMarginTop(-1)]}
-                                            //style={[getMarginTop(-1)]}
+                                            // search
+                                            // searchPlaceholder="Search..."
+                                            style={[{flex: 1, paddingHorizontal: getWidthnHeight(2).width}, getWidthnHeight(42)]}
+                                            containerStyle={[{borderColor: '#a62f2f', borderWidth: 0}, getWidthnHeight(42)]}
+                                            placeholder={'Leave Type'}
+                                            placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                            selectedTextStyle={[getMarginLeft(2)]}
                                             data={leaveType}
-                                            valueExtractor={({id})=> id}
-                                            label={"Leave type"}
-                                            fontSize={fontSizeH4().fontSize + 2}
-                                            labelFontSize={fontSizeH4().fontSize - 3}
-                                            labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
-                                            baseColor="#039FFD"
-                                            //value={this.state.typeleave}
-                                            value={leaveType[0]['name']}
-                                            labelExtractor={({name})=> name}
-                                            // placeholder={'Select leave type'}
-                                            onChangeText={(leaveID, index, data) => this.setState({ leaveID, leaveName: data[index]['name'] }, () => Keyboard.dismiss())}
+                                            valueField={'id'}
+                                            labelField={'name'}
+                                            onChange={(item) => {
+                                                console.log(item);
+                                                this.setState({
+                                                    leaveName: item.name, leaveID: item.id 
+                                                });
+                                                Keyboard.dismiss();
+                                            }}
+                                            value={this.state.leaveID}
                                         />
                                     </View> 
                                     <View style={[styles.leaveSelection, {borderColor: 'red', borderWidth: 0}]}>
@@ -1187,7 +1191,7 @@ const colorTitle = '#039FFD';
                 
                                 <View style={[{alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}, getWidthnHeight(93)]}>
                                     <Text style={[{color: 'rgb(19,111,232)', marginLeft: '3%', fontWeight: 'bold'}, styles.boldFont, fontSizeH4()]}>LOCATION</Text>
-                                    <Dropdown
+                                    {/* <Dropdown
                                         containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(1.5)]}
                                         inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(20), getMarginTop(-2)]}
                                         labelFontSize={fontSizeH4().fontSize - 3}
@@ -1210,13 +1214,37 @@ const colorTitle = '#039FFD';
                                         baseColor = {(countryName)? colorTitle : '#C4C4C4'}
                                         //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                         fontSize = {(countryName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                    /> */}
+                                    <Dropdown
+                                        // search
+                                        // searchPlaceholder="Search..."
+                                        style={[getWidthnHeight(20, 4), getMarginRight(2)]}
+                                        containerStyle={[{borderColor: '#a62f2f', borderWidth: 0}, getWidthnHeight(20)]}
+                                        placeholder='Country'
+                                        placeholderStyle={{fontSize: fontSizeH4().fontSize, color: "#C4C4C4"}}
+                                        selectedTextStyle={[getMarginLeft(2)]}
+                                        data={this.state.countries}
+                                        valueField={'id'}
+                                        labelField={'name'}
+                                        onChange={(item) => {
+                                            this.setState({
+                                                countryName: item.name, countryID: item.id, countryError: false
+                                            }, () => {
+                                                const countryIndex = this.state.countries.findIndex((subItem) => {
+                                                    return (countryID === subItem.id)
+                                                })
+                                                this.setState({countryCode: this.state.countries[countryIndex]['phone_code']});
+                                            })
+                                            Keyboard.dismiss();
+                                        }}
+                                        value={this.state.countryID}
                                     />
                                 </View>
 
                                 <View style={{
                                     flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: getWidthnHeight(93).width, marginVertical: '3%'
                                 }}>
-                                    <Dropdown
+                                    {/* <Dropdown
                                         containerStyle={[{
                                             borderWidth: (buttonPressed && stateError)? 2 : 1, borderColor: (buttonPressed && stateError)? 'red' : '#C4C4C4',
                                             borderStyle: (buttonPressed && stateError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center'}, getWidthnHeight(42, 6.5)]}
@@ -1239,8 +1267,31 @@ const colorTitle = '#039FFD';
                                         value={stateName}
                                         baseColor={(this.state.states_Value)? "#039FFD" : '#C4C4C4'}
                                         fontSize={fontSizeH4().fontSize + 2}
-                                    />
+                                    /> */}
                                     <Dropdown
+                                        search
+                                        searchPlaceholder="Search..."
+                                        style={[{
+                                            borderWidth: (buttonPressed && stateError)? 2 : 1, borderColor: (buttonPressed && stateError)? 'red' : '#C4C4C4',
+                                            borderStyle: (buttonPressed && stateError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center',
+                                            paddingLeft: getWidthnHeight(2).width}, getWidthnHeight(42, 6.5)]}
+                                        placeholder='State'
+                                        placeholderStyle={{fontSize: fontSizeH4().fontSize + 2, color: "#C4C4C4"}}
+                                        selectedTextStyle={[getMarginLeft(2)]}
+                                        data={this.state.states}
+                                        valueField={'id'}
+                                        labelField={'name'}
+                                        onChange={async(item) => {
+                                            this.setState({ states_Value: item.id, stateName: item.name });
+                                            this.setState({cities: []});
+                                            this.setState({cityError: true})
+                                            this.setState({stateError: false});
+                                            await this.cities();
+                                            Keyboard.dismiss();
+                                        }}
+                                        value={this.state.states_Value}
+                                    />
+                                    {/* <Dropdown
                                         containerStyle={[{
                                             borderWidth: (buttonPressed && cityError)? 2 : 1, borderColor: (buttonPressed && cityError)? 'red' : '#C4C4C4',
                                             borderStyle: (buttonPressed && cityError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center'}, getWidthnHeight(42, 6.5)]}
@@ -1260,6 +1311,26 @@ const colorTitle = '#039FFD';
                                             this.setState({ cities_Value, cityName: data[index]['name'] })
                                             this.setState({cityError: false})
                                         }}
+                                    /> */}
+                                    <Dropdown
+                                        search
+                                        searchPlaceholder="Search..."
+                                        style={[{
+                                            borderWidth: (buttonPressed && cityError)? 2 : 1, borderColor: (buttonPressed && cityError)? 'red' : '#C4C4C4',
+                                            borderStyle: (buttonPressed && cityError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center',
+                                            paddingLeft: getWidthnHeight(2).width}, getWidthnHeight(42, 6.5)]}
+                                        placeholder='City'
+                                        placeholderStyle={{fontSize: fontSizeH4().fontSize + 2, color: "#C4C4C4"}}
+                                        selectedTextStyle={[getMarginLeft(2)]}
+                                        data={this.state.cities}
+                                        valueField={'id'}
+                                        labelField={'name'}
+                                        onChange={async(item) => {
+                                            this.setState({ cities_Value: item.id, cityName: item.name })
+                                            this.setState({cityError: false})
+                                            Keyboard.dismiss();
+                                        }}
+                                        value={this.state.cities_Value}
                                     />
                                 </View>
 
@@ -1318,7 +1389,7 @@ const colorTitle = '#039FFD';
                                     <View style={{
                                         flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: getWidthnHeight(93).width, marginVertical: '3%'
                                     }}>
-                                        <Dropdown
+                                        {/* <Dropdown
                                             containerStyle={[{borderRadius: 1, borderStyle: (buttonPressed && departmentError)? 'dashed' : 'solid', borderWidth: (buttonPressed && departmentError)? 2 : 1,
                                             borderColor: (buttonPressed && departmentError) ? 'red' : '#C4C4C4', justifyContent: 'center'}, getWidthnHeight(42, 6.5)]}
                                             inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
@@ -1343,8 +1414,35 @@ const colorTitle = '#039FFD';
                                                 await this.leaveReplacementAvailability();
                                                 Keyboard.dismiss();
                                             }}
-                                        />
+                                        /> */}
                                         <Dropdown
+                                            search
+                                            searchPlaceholder="Search..."
+                                            style={[{
+                                                borderWidth: (buttonPressed && departmentError)? 2 : 1, borderColor: (buttonPressed && departmentError)? 'red' : '#C4C4C4',
+                                                borderStyle: (buttonPressed && departmentError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center',
+                                                paddingLeft: getWidthnHeight(2).width}, getWidthnHeight(42, 6.5)]}
+                                            placeholder='Department*'
+                                            placeholderStyle={{fontSize: fontSizeH4().fontSize + 2, color: "#C4C4C4"}}
+                                            disable={(this.state.leaveType === 'Full' && !toDate)? true : false}
+                                            selectedTextStyle={[getMarginLeft(2)]}
+                                            data={this.state.departments}
+                                            valueField={'id'}
+                                            labelField={'name'}
+                                            onChange={(item) => {
+                                                console.log("@@@ DEPARTMENT: ", item);
+                                                this.setState({ 
+                                                    departments_Value: item.id, departmentName: item.name,
+                                                    employees: [], employees_Value: null, employeeName: '',
+                                                    departmentError: false, empNameError: true
+                                                }, async() => {
+                                                    await this.leaveReplacementAvailability();
+                                                })
+                                                Keyboard.dismiss();
+                                            }}
+                                            value={this.state.departments_Value}
+                                        />
+                                        {/* <Dropdown
                                             containerStyle={[{borderRadius: 1, borderStyle: (buttonPressed && empNameError)? 'dashed' : 'solid', borderWidth: (buttonPressed && empNameError)? 2 : 1,
                                             borderColor: (buttonPressed && empNameError) ? 'red' : '#C4C4C4', justifyContent: 'center'}, getWidthnHeight(42, 6.5)]}
                                             inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
@@ -1363,6 +1461,28 @@ const colorTitle = '#039FFD';
                                                 this.setState({empNameError: false})
                                                 console.log("####EMPLOYEES: ", this.state.employees_Value, data[index]['fullname'])
                                             }}
+                                        /> */}
+                                        <Dropdown
+                                            search
+                                            searchPlaceholder="Search..."
+                                            style={[{
+                                                borderWidth: (buttonPressed && empNameError)? 2 : 1, borderColor: (buttonPressed && empNameError)? 'red' : '#C4C4C4',
+                                                borderStyle: (buttonPressed && empNameError)? 'dashed' : 'solid', borderRadius: 1, justifyContent: 'center',
+                                                paddingLeft: getWidthnHeight(2).width}, getWidthnHeight(42, 6.5)]}
+                                            placeholder='Employee*'
+                                            placeholderStyle={{fontSize: fontSizeH4().fontSize + 2, color: "#C4C4C4"}}
+                                            // disable={(this.state.leaveType === 'Full')? true : false}
+                                            selectedTextStyle={[getMarginLeft(2)]}
+                                            data={this.state.employees}
+                                            valueField={'user_id'}
+                                            labelField={'fullname'}
+                                            onChange={async(item) => {
+                                                Keyboard.dismiss();
+                                                this.setState({ employees_Value: item.user_id, employeeName: item.fullname }, () => console.log("@@@@EMPLOYEE ID: ", this.state.employees_Value))
+                                                this.setState({empNameError: false})
+                                                console.log("####EMPLOYEES: ", item)
+                                            }}
+                                            value={this.state.employees_Value}
                                         />
                                     </View>
                                     

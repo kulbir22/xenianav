@@ -10,7 +10,6 @@ import moment from 'moment';
 import WebView from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import PushNotification from 'react-native-push-notification';
 import RNBackgroundDownloader from 'react-native-background-downloader';
 import RNFS, {exists} from 'react-native-fs';
@@ -22,7 +21,7 @@ import { selectDrawerItem } from '../store/redux/reducer';
 import {
     getWidthnHeight, Spinner, CommonModal, IOS_StatusBar, DownloadModal, WaveHeader, getMarginTop, 
     SalaryHTML, getMarginVertical, GradientIcon, fontSizeH4, statusBarGradient
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {extractBaseURL} from '../api/BaseURL';
 
 const monthList = [

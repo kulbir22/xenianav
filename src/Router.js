@@ -51,7 +51,7 @@ import AdminTracker from './Target/AdminTracker';
 import HolidaysList from './AartiFiles/Holidays/HolidaysList';
 import SalarySlip from './AartiFiles/SalarySlip/SalarySlip';
 import CameraScreen from './Attendance Module/CameraScreen';
-import {getWidthnHeight} from './KulbirComponents/common';
+import {getWidthnHeight} from './NewComponents/common';
 import Pre_Approval_Form from './Manage-Travel/Pre-Approval-Form';
 import Travel_Approvals from './Manage-Travel/Travel-Approvals';
 import Claim_Requests from './Manage-Travel/Claim-Requests';

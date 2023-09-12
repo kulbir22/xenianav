@@ -28,7 +28,7 @@ import {
     CommonModal, IOS_StatusBar, Spinner, getMarginTop, getMarginRight,
     AppUpdate, getMarginLeft, getMarginVertical, InOutButton, AnimatedFlatList,
     getMarginHorizontal, fontSizeH1, DummyFlatlist, SelfBirthday, FeaturePopup
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import { extractBaseURL } from '../api/BaseURL';
 
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
@@ -108,15 +108,15 @@ class Welcomepage extends Component {
 
     checkXeniaUpdate() {
         if (Platform.OS === "android") {
-            console.log("##### CHECK UPDATE")
+            // console.log("##### CHECK UPDATE")
             checkVersion({
                 version: DeviceInfo.getVersion(), // app local version
                 androidStoreURL: 'https://play.google.com/store/apps/details?id=com.xenia',
                 country: 'jp', // default value is 'jp'
             }).then((result) => {
-                console.log("$$$$$ PlayStore Result: ", result);
+                // console.log("$$$$$ PlayStore Result: ", result);
                 this.setState({ playStoreAppVersion: result.remote }, () => {
-                    console.log("$$$$$ Xenia version on Playstore: ", this.state.playStoreAppVersion);
+                    // console.log("$$$$$ Xenia version on Playstore: ", this.state.playStoreAppVersion);
                     this.extractLink();
                 })
             }).catch((error) => {
@@ -259,7 +259,7 @@ class Welcomepage extends Component {
             })
         ]).start(({ finished }) => {
             this.setState({ bounceFlatList: false }, () => {
-                console.log("BOUNCE FLATLIST: ", this.state.bounceFlatList)
+                // console.log("BOUNCE FLATLIST: ", this.state.bounceFlatList)
             })
             const { dashboardScroller, dashboardQuickLinks, enableAttendance } = this.getDashboardPermissions();
             if (finished) {
@@ -458,7 +458,7 @@ class Welcomepage extends Component {
             //console.log("URL LOG: ", baseURL);
             this.setState({ baseURL }, () => {
                 const { baseURL } = this.state;
-                console.log("&&&& CALLING DASHBOARD", baseURL);
+                // console.log("&&&& CALLING DASHBOARD", baseURL);
                 if (baseURL && enableAttendance) {
                     //console.log("&&&& CALLING DASHBOARD");
                     this.lastThreeDaysAttendance()
@@ -523,7 +523,7 @@ class Welcomepage extends Component {
             this.setState({
                 dashboard: success.attendance_data, singleDate, doubleDate: data, showAllDates: false, attendancePermission: success.attd_permission
             }, () => {
-                console.log("^^^### SPLICED DATA: ", this.state.singleDate, "\n\n", this.state.doubleDate)
+                // console.log("^^^### SPLICED DATA: ", this.state.singleDate, "\n\n", this.state.doubleDate)
                 this.rotateIconFunction();
             })
             if (playStoreAppVersion > appVersion) {
@@ -610,20 +610,6 @@ class Welcomepage extends Component {
         })
     }
 
-    //Evaluates which Header is to be shown
-    renderHeader() {
-        const { project } = this.state;
-        return (
-            <WaveHeader
-                wave={false}
-                menu='white'
-                logo={(project === "3") ? AartiDrugs : null}
-                logoBG={[{ width: getWidthnHeight(15).width, height: getWidthnHeight(15).width, backgroundColor: 'white', borderRadius: getWidthnHeight(7.5).width }]}
-                logoSize={[{ width: getWidthnHeight(12).width, height: getWidthnHeight(12).width }]}
-            />
-        );
-    }
-
     //Calculates the Dimensions for Header based on users device dimension
 
     headerLayout = (event) => {
@@ -683,7 +669,7 @@ class Welcomepage extends Component {
     }
 
     continueAnimation() {
-        console.log("CALLED ANIMATION FUNCTION")
+        // console.log("CALLED ANIMATION FUNCTION")
         this.animatePage();
         this.rotateIconFunction();
     }
@@ -700,10 +686,10 @@ class Welcomepage extends Component {
         } = this.state;
         const { navigation } = this.props;
         let markAttendance = false;
-        console.log("@@@@ NAVIGATION WELCOME: ", navigation)
+        // console.log("@@@@ NAVIGATION WELCOME: ", JSON.stringify(navigation.getState().routes, null, 4))
         if (attendancePermission?.can_mark_attd) {
             markAttendance = attendancePermission.can_mark_attd;
-            console.log("@@@@@ ATTENDANCE PERMISSION: ", attendancePermission?.can_mark_attd);
+            // console.log("@@@@@ ATTENDANCE PERMISSION: ", attendancePermission?.can_mark_attd);
         }
         // console.log("@@##!!$$DATE 1: ", this.props.drawerProps);
         // console.log("DATE 2: ", moment("30-04-2021 10:30 AM", "DD-MM-YYYY hh:mm A").valueOf());
@@ -797,7 +783,7 @@ class Welcomepage extends Component {
                 }
             ]
         }
-        console.log("@#@#@# ANIMATE: ", typeof animateGameIcon, animateGameIcon)
+        // console.log("@#@#@# ANIMATE: ", typeof animateGameIcon, animateGameIcon)
         const calculate = Dimensions.get('window')
         let userObj = JSON.parse(this.props.drawerProps);
         let user = userObj.success.project;
@@ -816,7 +802,6 @@ class Welcomepage extends Component {
                 {/* <StatusBar backgroundColor={'transparent'} barStyle={'light-content'}/> */}
                 <SafeAreaView style={{ flex: 1 }}>
                     <View>
-                        {/* {this.renderHeader()}  */}
                         <View style={{ position: 'absolute', alignSelf: 'flex-end', borderColor: 'white', borderWidth: 0, marginVertical: 3 }}>
                             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderColor: 'white', marginRight: 3 }}>
                                 {(updateAvailable) ?

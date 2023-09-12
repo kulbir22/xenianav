@@ -7,7 +7,7 @@ import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import {Dropdown} from 'react-native-material-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Input, Button, WaveHeader, GradientText, DateSelector, SearchIcon, Card, getWidthnHeight, DataBar, Spinner, CommonModal, IOS_StatusBar, pdfSheet} from '../../KulbirComponents/common';
+import {Input, Button, WaveHeader, GradientText, DateSelector, SearchIcon, Card, getWidthnHeight, DataBar, Spinner, CommonModal, IOS_StatusBar, pdfSheet} from '../../NewComponents/common';
 import {extractBaseURL} from '../../api/BaseURL';
 
 const monthList = [

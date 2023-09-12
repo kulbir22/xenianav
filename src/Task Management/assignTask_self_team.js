@@ -42,7 +42,7 @@ import Dialog, {
 } from 'react-native-popup-dialog';
 import ActionModal from 'react-native-modal';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, Spinner, getMarginTop, Input, getMarginLeft} from '../KulbirComponents/common';
+import {CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, Spinner, getMarginTop, Input, getMarginLeft} from '../NewComponents/common';
 import { searchText } from '../actions';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

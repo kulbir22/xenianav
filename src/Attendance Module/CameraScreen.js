@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Text, View, Modal, Image, TouchableOpacity} from 'react-native';
-import {Camera, getWidthnHeight} from '../KulbirComponents/common';
+import {Camera, getWidthnHeight} from '../NewComponents/common';
 
 class CameraScreen extends Component{
     constructor(props){

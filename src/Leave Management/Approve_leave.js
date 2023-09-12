@@ -28,7 +28,7 @@ import Dialog, {
   SlideAnimation,
 } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal, getWidthnHeight, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft} from '../KulbirComponents/common';
+import {CommonModal, getWidthnHeight, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class Leaves extends Component {

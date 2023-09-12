@@ -19,7 +19,7 @@ import {
     CommonModal, IOS_StatusBar, Spinner, getMarginTop, getMarginRight, ListModal,
     AlertBox, getMarginLeft, getMarginVertical, InOutButton, AnimatedFlatList,
     getMarginHorizontal, fontSizeH1, fontSizeH3, GradientBorderBox, fontSize_H3, fontSizeH2
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
     const SWIPE_THRESHOLD = getWidthnHeight(30).width;
 
@@ -65,7 +65,7 @@ import {
         setSelectedIndex(event){
             const viewSize = event.nativeEvent.layoutMeasurement.width;
             const contentOffset = event.nativeEvent.contentOffset.x;
-            const selectedIndex = Math.floor(contentOffset / viewSize);
+            const selectedIndex = Math.round(contentOffset / viewSize);
             this.setState({selectedIndex}, () => {
                 this.scrollRef.scrollToIndex({
                     animated: true,

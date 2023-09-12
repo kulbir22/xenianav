@@ -1,20 +1,17 @@
 import React, {Component} from 'react';
 import {
     View, StyleSheet, TextInput, ActivityIndicator,
-    Text, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, 
+    Text, KeyboardAvoidingView, TouchableOpacity, PermissionsAndroid, 
     Alert, Dimensions, Keyboard, Linking, Animated, Easing, ScrollView, 
-    Platform, BackHandler, ToastAndroid, Image, ImageBackground, StatusBar
+    Platform, BackHandler, ToastAndroid, Image, ImageBackground, StatusBar, SafeAreaView
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 import RNExitApp from 'react-native-exit-app';
+import messaging from '@react-native-firebase/messaging';
 import {connect} from 'react-redux';
 import DeviceInfo, {getDeviceId} from 'react-native-device-info';
 import axios from 'axios';
-//import firebase  from './firebase';
-import RNFirebase from '@react-native-firebase/app';
-import firebase from './firebase';
-import messaging from '@react-native-firebase/messaging';
 import UserIcon from 'react-native-vector-icons/FontAwesome';
 import PasswordKey from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -22,10 +19,9 @@ import {
     getWidthnHeight, Spinner, CommonModal, ChangePassword, IOS_StatusBar, MaskedGradientText,
     getMarginTop, fontSizeH2, InputText, LoginButton, getMarginLeft, statusBarGradient,
     DismissKeyboard, ReactLoader, Slider, getMarginRight, fontSizeH4, DesktopLoader, GradientIcon
-} from './KulbirComponents/common';
+} from './NewComponents/common';
 import { sendProps, serverLink, loginState, setProject, setServerLabel } from './store/redux/reducer';
 
-let beginCount;
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
@@ -33,7 +29,7 @@ const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 const testLabel = (<Text style={[{fontSize: fontSizeH4().fontSize - 3, color: 'white'}, getMarginRight(3)]}>Test</Text>);
 
 class LoginPage extends Component {
-  	constructor(props){
+    constructor(props){
     super(props)
         this.state={
             employee_code:'',
@@ -104,6 +100,7 @@ class LoginPage extends Component {
                 })
             });
         }
+        this.beginCount = null;
     }
            
     componentDidMount(){
@@ -119,7 +116,7 @@ class LoginPage extends Component {
 
     startCount(){
         this.resetTimerFunction();
-        beginCount = setInterval(() => {
+        this.beginCount = setInterval(() => {
             const {minuteHand, secondHand} = this.state;
             console.log("@@@@MINUTE: ", minuteHand, "SECOND: ", secondHand)
             if(minuteHand === 1 && secondHand >= 0){
@@ -134,7 +131,7 @@ class LoginPage extends Component {
                     const {secondHand} = this.state;
                     if(secondHand < 0){
                         this.setState({resetTimer: true})
-                        clearInterval(beginCount);
+                        clearInterval(this.beginCount);
                     }
                 })
             }
@@ -267,17 +264,52 @@ class LoginPage extends Component {
 
     requestUserPermission = async () => {
         //Alert.alert("ALERT 5");
-        await firebase.messaging().registerDeviceForRemoteMessages();
-        const token = await firebase.messaging().getToken();
-        this.setState({device_id: token}, () => this.value());
+        const apiLevel = await DeviceInfo.getApiLevel();
+        if(apiLevel < 33){
+            await messaging().registerDeviceForRemoteMessages();
+            const token = await messaging().getToken();
+            this.setState({device_id: token}, () => this.value());
+            return;
+        }
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        console.log('*&*&%$@#@!@! PERMISSIONS: ', granted, apiLevel);
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            await messaging().registerDeviceForRemoteMessages();
+            const token = await messaging().getToken();
+            this.setState({device_id: token}, () => this.value());
+        }else{
+            console.log('Notification permission denied');
+        }
     }
 
-    value_thrd= async()=>{
+    value_thrd = async () => {
         console.log("iOS Detected*****")
         //await messaging().registerDeviceForRemoteMessages();
-        await firebase.messaging().requestPermission().then(async(success) => {
-            console.log("IOS ACK: ", Boolean(success))
-            const token = await firebase.messaging().getToken()
+        // messaging().requestPermission().then(async(success) => {
+        //     const token = await messaging().getToken()
+        //     console.log("IOS ACK: ", Boolean(success), token)
+        //     //this.setState({device_id : DeviceInfo.getUniqueId()})
+        //     this.setState({device_id : token}, () => {
+        //         console.log("IOS TOKEN: ", this.state.device_id)
+        //         if(this.state.device_id){
+        //             this.value();
+        //         }
+        //     })
+        // }).catch((error) => {
+        //     console.log("IOS NACK: ", error)
+        //     Alert.alert("Request TimeOut. \n To Allow: \n Goto Settings -> Xenia -> Notifications -> Allow Notifications \n Afterwards, clear app from background and try again.")
+        //     RNExitApp.exitApp();
+        // })
+        const authStatus = await messaging().requestPermission();
+        const enabled = (
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL
+        );
+        if(enabled){
+            const token = await messaging().getToken()
+            console.log("IOS ACK: ", token)
             //this.setState({device_id : DeviceInfo.getUniqueId()})
             this.setState({device_id : token}, () => {
                 console.log("IOS TOKEN: ", this.state.device_id)
@@ -285,11 +317,7 @@ class LoginPage extends Component {
                     this.value();
                 }
             })
-        }).catch((error) => {
-            console.log("IOS NACK: ", Boolean(error))
-            Alert.alert("Request TimeOut. \n To Allow: \n Goto Settings -> Xenia -> Notifications -> Allow Notifications \n Afterwards, clear app from background and try again.")
-            RNExitApp.exitApp();
-        })
+        }
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -324,7 +352,7 @@ class LoginPage extends Component {
     }
 
     checkiOSPermission = async () => {
-        const enabled = await firebase.messaging().hasPermission();
+        const enabled = await messaging().hasPermission();
         console.log("PROMISE CHECK: ", enabled)
         if(enabled){
             this.value_thrd();
@@ -334,7 +362,7 @@ class LoginPage extends Component {
     }
 
     requestiOSPermission = async () => {
-        await firebase.messaging().requestPermission()
+        await messaging().requestPermission()
         .then(() => {
           this.checkiOSPermission();
         })
@@ -471,8 +499,9 @@ class LoginPage extends Component {
             })
         }
         return (
-            <View style={{flex: 1}}>
-            <StatusBar hidden={false} barStyle="dark-content" />
+            <View style={{flex: 1, borderColor: 'red', borderWidth: 0}}>
+            <StatusBar hidden={false} barStyle="light-content" />
+            {/* <IOS_StatusBar barStyle={'dark-content'} /> */}
             {(!loading) && 
                 <View style={{flex: 1}}>
                     <View style={{flex: 1, zIndex: 2}}>
@@ -666,7 +695,7 @@ class LoginPage extends Component {
                                                     <Text style={[{fontStyle: 'italic', color: '#0074E4', fontSize: (fontSizeH4().fontSize + 3)}]}>USER E-ONBOARDING</Text>
                                                 </TouchableOpacity>
                                             </Animated.View>
-                                            {/* {<AnimateTouch
+                                            {/* <AnimateTouch
                                                 activeOpacity={0.5}
                                                 style={[animateOpacity]}
                                                 onPress={() => {
@@ -681,7 +710,7 @@ class LoginPage extends Component {
                                                 ]}>
                                                     Forgot Password ?
                                                 </Text>
-                                            </AnimateTouch>} */}
+                                            </AnimateTouch> */}
                                             <Animated.Text style={[{fontStyle: 'italic'}, getMarginTop(5), getMarginLeft(5), animateOpacity]}>Version: {DeviceInfo.getVersion()}</Animated.Text>
                                         </Animated.View>
                                         {(showChangePassModal) && (
@@ -694,7 +723,7 @@ class LoginPage extends Component {
                                                 updatePassStep={(step) => this.setState({changePassStep: step})}
                                                 startCount={() => this.startCount()}
                                                 clearCount={() => {
-                                                    this.setState({resetTimer: true, minuteHand: 1, secondHand: 59}, () => clearInterval(beginCount));
+                                                    this.setState({resetTimer: true, minuteHand: 1, secondHand: 59}, () => clearInterval(this.beginCount));
                                                 }}
                                                 minuteHand={this.state.minuteHand}
                                                 secondHand={this.state.secondHand}
@@ -710,7 +739,8 @@ class LoginPage extends Component {
                     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
                         <Animated.Image 
                             source={require('./Image/LoginPage.png')}
-                            style={[{zIndex: 1}, getWidthnHeight(100, 100), animateBGImage]}
+                            resizeMode="cover"
+                            style={[getWidthnHeight(100, 100), animateBGImage]}
                         />
                     </View>
                 </View>

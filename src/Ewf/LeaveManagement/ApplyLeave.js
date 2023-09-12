@@ -15,7 +15,7 @@ import {extractBaseURL, login} from '../../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, WaveHeader, getWidthnHeight, TimePicker, Spinner, getMarginTop, getMarginLeft, fontSizeH4,
     fontSizeH3, AnimatedTextInput, getMarginHorizontal, RadioEnable, RadioDisable, getMarginBottom, DateTimePicker
-} from '../../KulbirComponents/common';
+} from '../../NewComponents/common';
 
 const colorTitle = '#039FFD';
 

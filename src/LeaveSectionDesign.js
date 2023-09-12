@@ -13,7 +13,7 @@
     ScrollView
  } from 'react-native';
  import AsyncStorage from '@react-native-async-storage/async-storage';
- import {getWidthnHeight, getMarginVertical} from './KulbirComponents/common';
+ import {getWidthnHeight, getMarginVertical} from './NewComponents/common';
 
  const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
  export default class LeaveSectionDesign extends Component {

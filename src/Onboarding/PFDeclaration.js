@@ -14,7 +14,7 @@ import {
     DismissKeyboard, GradientIcon, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, GradientText,
     SearchableDropDown, AnimateDateLabel, Slider, getMarginRight, CheckList, LanguageSelection, ScreensModal, fontSizeH2,
     BasicChoppedButton, MaskedGradientText, stateList, cities, Spinner, RadioEnable, RadioDisable
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {fetchBaseURL, savedToken} from '../api/BaseURL';
 
 const COLOR1 = "#039FFD";
@@ -94,6 +94,7 @@ class PFDeclaration extends Component{
         {
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${secretToken}`
             }
         }).then((response) => {
@@ -173,7 +174,7 @@ class PFDeclaration extends Component{
                                             style={[{flex: 1, borderWidth: 0, borderColor: 'blue'}, getMarginTop(2), getMarginBottom(1), getWidthnHeight(93)]}
                                         >
                                             <View style={[{flex: 1, alignItems: 'center'}]}>
-                                                <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(87), getMarginTop(2)]}>
+                                                <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}, getWidthnHeight(87), getMarginTop(2)]}>
                                                     {(iAgree)?
                                                         <TouchableOpacity activeOpacity={0.7} onPress={() => this.setState({iAgree: !this.state.iAgree})}>
                                                             <MaterialCommunityIcons name="checkbox-marked" size={getWidthnHeight(7).width} color={colorTitle}/>
@@ -187,19 +188,22 @@ class PFDeclaration extends Component{
                                                             />
                                                         </TouchableOpacity>
                                                     }
-                                                    <Text style={[fontSizeH4()]}>I, Mr. /Ms.</Text>
-                                                    <View style={[{borderBottomColor: '#C4C4C4', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center'}, getWidthnHeight(55, 4)]}>
-                                                        <Text style={[fontSizeH4()]}>Kulbir Singh</Text>
-                                                    </View>
+                                                    <Text style={[{paddingLeft: getWidthnHeight(2).width}, fontSizeH4()]}>I hereby declare that:</Text>
                                                 </View>
-                                                <View style={[{alignItems: 'center'}, getMarginTop(1), getMarginHorizontal(3)]}>
+                                                <View style={[{alignItems: 'center'}, getMarginTop(2), getMarginHorizontal(3)]}>
                                                     <Text style={[{textAlign: 'justify'}, fontSizeH4()]}>
-                                                        {
-                                                            `hereby declare & confirm that I have no previous UAN & I have signed Form No. 11 as a declaration to support this.\n\nIf at any time it is observed by the company / PF Department that the information in any manner have been manipulatedor tempered by me directly or indirectly or any of my action has resulted in the financial loss to the company, I will be liable.\n\nI the undersigned, hereby confirm that all information detailed above & provided by me on the basis of which I am being offered employment is accurate. I understand that false declaration would be an offense & may lead to immediate removal from the company.`
-                                                        }
+                                                        {`1. I have applied through XEAM online portal only.\n\n`}
+                                                        {`2. I got this opportunity to work on the project purely on the basis of merit.\n\n`}
+                                                        {`3. No one from XEAM Ventures has contacted me for any obligation/bribe/money in lieu of job placement.\n\n`}
+                                                        {`4. I have not paid to anyone from XEAM Ventures (except a refundable security if any)\n\n`}
+                                                        {`5. I clearly understand that XEAM Ventures has a zero tolerance policy for any obligation in lieu of Job and no one from XEAM Ventures accepts anything in cash or kind for job placements.\n\n`}
+                                                        {`6. I hereby assure that if in future anyone from XEAM Ventures contacts me on any of the above points, I will immediately inform XEAM Ventures on xeam@xeamventures.com and hr@xeamventures.com\n`}
+                                                    </Text>
+                                                    <Text style={[{textAlign: 'justify'}, fontSizeH4()]}>
+                                                        
                                                     </Text>
                                                 </View>
-                                                <View style={[{alignItems: 'center', borderColor: colorTitle, borderWidth: 2}, getMarginTop(2)]}>
+                                                <View style={[{alignItems: 'center', borderColor: colorTitle, borderWidth: 2}, getMarginTop(0)]}>
                                                     <Image 
                                                         source={{uri: signature}}
                                                         resizeMode="contain"
@@ -207,7 +211,7 @@ class PFDeclaration extends Component{
                                                     />
                                                 </View>
                                                 <Text style={[{fontStyle: 'italic'}, fontSizeH4(), getMarginVertical(1)]}>Signature of Employee</Text>
-                                                <View style={[{flexDirection: 'row'}, getMarginTop(2), getWidthnHeight(83)]}>
+                                                {/* <View style={[{flexDirection: 'row'}, getMarginTop(2), getWidthnHeight(83)]}>
                                                     <Text style={[{fontWeight: 'bold', fontSize: (fontSizeH4().fontSize + 2)}, styles.boldFont]}>Date:</Text>
                                                     <Text style={[{fontSize: (fontSizeH4().fontSize + 2)}, getMarginLeft(2)]}>{this.state.currentDate()}</Text>
                                                 </View>
@@ -217,7 +221,7 @@ class PFDeclaration extends Component{
                                                         <Text style={[{fontSize: (fontSizeH4().fontSize + 2)}, getMarginLeft(2)]}>{address.line1}</Text>
                                                         <Text style={[{fontSize: (fontSizeH4().fontSize + 2)}, getMarginLeft(2)]}>{address.line2}</Text>
                                                     </View>
-                                                </View>
+                                                </View> */}
                                             </View>
                                         </ScrollView>
                                         <View style={[{backgroundColor: 'white', alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}, getMarginBottom(1), getWidthnHeight(93)]}>
@@ -228,7 +232,7 @@ class PFDeclaration extends Component{
                                                     leftBoxSize={{width: getWidthnHeight(6).width, height: getWidthnHeight(undefined, 6).height}}
                                                     middleBoxSize={{width: getWidthnHeight(20).width, height: getWidthnHeight(undefined, 6).height}}
                                                     rightBoxSize={{width: getWidthnHeight(6).width, height: getWidthnHeight(undefined, 6).height}}
-                                                    title={'NEXT'}
+                                                    title={'SUBMIT'}
                                                     titleStyle={[{color: '#FFFFFF', letterSpacing: 2}]}
                                                     buttonColor={"#039FFD"}
                                                     underLayColor={"#EA304F"}

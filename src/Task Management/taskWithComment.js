@@ -31,7 +31,7 @@ import Logo from '../Image/logo.png';
 import CheckBox from 'react-native-check-box';
 import { CustomPicker } from 'react-native-custom-picker';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal} from '../KulbirComponents/common';
+import {CommonModal} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class Leaves extends Component {

@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     StayModal, getWidthnHeight, WaveHeader, getMarginTop, getMarginLeft, getMarginHorizontal, Spinner, SearchableDropDown,
     getMarginRight, CustomTextInput, MySwitch,RoundButton, ItineraryDescriptionModal,fontSize_H3, fontSizeH4, AlertBox, 
-    IOS_StatusBar, statusBarGradient, DateTimePicker, getMarginVertical, getMarginBottom, DocumentsModal} from '../KulbirComponents/common';
+    IOS_StatusBar, statusBarGradient, DateTimePicker, getMarginVertical, getMarginBottom, DocumentsModal} from '../NewComponents/common';
 import moment from 'moment';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';

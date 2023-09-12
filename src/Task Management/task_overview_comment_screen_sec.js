@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SegmentedControls } from 'react-native-radio-buttons'
 import Dialog, { DialogContent } from 'react-native-popup-dialog';
 import {extractBaseURL} from '../api/BaseURL';
-import {CommonModal} from '../KulbirComponents/common';
+import {CommonModal} from '../NewComponents/common';
 // import Base_url from './Base_url';
 
 

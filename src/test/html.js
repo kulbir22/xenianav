@@ -3,7 +3,7 @@ import { PanResponder, StyleSheet } from 'react-native';
 import {Text, View, ScrollView, TouchableWithoutFeedback,Platform, Image, PermissionsAndroid, Alert, Animated, Easing, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
-import {Header, SearchIcon, getWidthnHeight, Spinner, CommonModal, IOS_StatusBar, pdfSheet, WaveHeader, getMarginTop, getMarginLeft, Slider} from '../KulbirComponents/common';
+import {Header, SearchIcon, getWidthnHeight, Spinner, CommonModal, IOS_StatusBar, pdfSheet, WaveHeader, getMarginTop, getMarginLeft, Slider} from '../NewComponents/common';
 const AnimateGradient = Animated.createAnimatedComponent(LinearGradient);
 const AnimateTouch = Animated.createAnimatedComponent(TouchableOpacity);
 const name = 'Kulbir Singh';

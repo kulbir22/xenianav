@@ -19,7 +19,7 @@ import {
     WaveHeader, fontSizeH3, AlertBox, DismissKeyboard, getMarginLeft, getMarginRight,
     TravelApprovalModal, TravelApprovalInfo, getMarginHorizontal, getMarginVertical,
     statusBarGradient
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import {extractBaseURL} from '../api/BaseURL';
 
 const AnimateTextInput = Animated.createAnimatedComponent(TextInput);

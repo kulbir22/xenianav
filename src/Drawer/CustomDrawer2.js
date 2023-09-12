@@ -17,7 +17,7 @@ import { showGame, reloadDrawer, selectDrawerItem, loginState, setServerLabel } 
 import { 
     getWidthnHeight, fontSizeH4, getMarginRight, getMarginTop, getMarginLeft, 
     getMarginVertical, fontSizeH2, fontSizeH3, GradientIcon, Spinner, getMarginBottom
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 let COLOR1 = "#039FFD";
 let COLOR2 = "#EA304F"; 

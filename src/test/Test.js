@@ -15,7 +15,7 @@ import {
   SearchBar,
   fontSizeH3,
   fontSizeH2
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 import { filteredData } from '../actions';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

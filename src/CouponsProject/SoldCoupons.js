@@ -7,7 +7,7 @@ import {Header} from './Header';
 import {
     getWidthnHeight, getMarginTop, getMarginLeft, fontSizeH4, ChoppedButton, getMarginVertical, getMarginBottom,
     MaskedGradientText, fontSizeH3, AnimateDateLabel, IOS_StatusBar, statusBarGradient, Spinner
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 class SoldCoupons extends Component{
     constructor(props){

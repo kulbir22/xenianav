@@ -76,7 +76,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     ndkVersion '24.0.8215888'
 
     compileOptions {
@@ -100,10 +100,10 @@ android {
     defaultConfig {
         applicationId "com.xenia"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdk 33
         missingDimensionStrategy 'react-native-camera', 'general'
-        versionCode 61
-        versionName '2.5.6'
+        versionCode 62
+        versionName '2.5.7'
         multiDexEnabled true
     }
     // dexOptions {
@@ -121,10 +121,10 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('xenia.keystore')
-            storePassword 'Power@e202#'
-            keyAlias 'xenia'
-            keyPassword 'Power@e202#'
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
         release {
             storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -198,6 +198,7 @@ dependencies {
     // implementation files('libs/mylib-release-1.13.aar')
     // implementation project(':bugsnag-react-native')
     //implementation project(':react-native-community-geolocation')
+    implementation "androidx.work:work-runtime:2.8.1"
     implementation project(':react-native-push-notification')
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-image-picker')

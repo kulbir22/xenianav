@@ -9,7 +9,7 @@ import axios from 'axios';
 import {Svg, Ellipse, Defs, ClipPath, Circle, Line, G, Polyline, Rect, Polygon, Path, Stop, LinearGradient} from 'react-native-svg';
 import {
     getMarginTop, getWidthnHeight, getMarginRight, getMarginLeft, WaveHeader, IOS_StatusBar, GradientText, Spinner,
-    statusBarGradient, fontSizeH4, getMarginHorizontal, getMarginVertical, getMarginBottom, fontSizeH2} from '../KulbirComponents/common';
+    statusBarGradient, fontSizeH4, getMarginHorizontal, getMarginVertical, getMarginBottom, fontSizeH2} from '../NewComponents/common';
 // const timeStamp = moment().valueOf();
 // const timeStamp2 = moment(timeStamp).subtract(5, 'minutes');
 // const timeStamp3 = moment(timeStamp).subtract(7, 'minutes');

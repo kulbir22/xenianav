@@ -13,7 +13,7 @@ import axios from 'axios';
 import {extractBaseURL} from '../api/BaseURL';
 import {
     getMarginTop, getWidthnHeight, getMarginRight, getMarginLeft, WaveHeader, IOS_StatusBar, MaskedGradientText, Spinner,
-    statusBarGradient, fontSizeH4, getMarginHorizontal, getMarginVertical, getMarginBottom, fontSizeH2} from '../KulbirComponents/common';
+    statusBarGradient, fontSizeH4, getMarginHorizontal, getMarginVertical, getMarginBottom, fontSizeH2} from '../NewComponents/common';
 // const timeStamp = moment().valueOf();
 // const timeStamp2 = moment(timeStamp).subtract(5, 'minutes');
 // const timeStamp3 = moment(timeStamp).subtract(7, 'minutes');

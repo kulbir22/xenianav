@@ -9,7 +9,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import DocumentPicker from 'react-native-document-picker'
 import moment from 'moment';
 import axios from 'axios';
-import { Dropdown } from 'react-native-material-dropdown';
+// import { Dropdown } from 'react-native-material-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import RNBackgroundDownloader from 'react-native-background-downloader';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS, { exists } from 'react-native-fs';
@@ -18,8 +19,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {
     getWidthnHeight, IOS_StatusBar, getMarginTop, fontSizeH4, fontSizeH3, AnimatedTextInput, getMarginHorizontal,
     DismissKeyboard, GradientIcon, ChoppedButton, getMarginVertical, getMarginLeft, getMarginBottom, MaskedGradientText,
-    SearchableDropDown, AnimateDateLabel, Slider, getMarginRight, DownloadModal, Spinner, ScreensModal, Attachments
-} from '../KulbirComponents/common';
+    SearchableDropDown, AnimateDateLabel, Slider, getMarginRight, DownloadModal, Spinner, ScreensModal, Attachments, DateTimePicker
+} from '../NewComponents/common';
 import {fetchBaseURL} from '../api/BaseURL';
 
 const COLOR1 = "#039FFD";
@@ -33,6 +34,24 @@ const mb1 = '1048576'; //1 MB
 class EmergencyDetails extends Component{
     constructor(props){
         super(props)
+        let year = `${moment().year()}`;
+        let month = `${moment().month() + 1}`;
+        month = (month < 10)? `0${month}` : month;
+        let initialDate = '1';
+        initialDate = (initialDate < 10)? `0${initialDate}` : initialDate;
+        let currentDate = `${year}-${month}-${initialDate}`;
+        console.log("!!@@@ DATE: ", currentDate)
+        currentDate = moment(currentDate, "YYYY-MM-DD").subtract(1, 'month').format("YYYY-MM-DD");
+        const fromStartDate = moment(currentDate, "YYYY-MM-DD").subtract(50, 'years').format("YYYY-MM-DD");
+        const currentYear = moment(currentDate, "YYYY-MM-DD").format("YYYY");
+        if(year !== currentYear){
+            currentDate = `${year}-${month}-${initialDate}`
+            console.log("***&&& DATE2: ", currentDate, year, currentYear)
+        }
+        const currentTime = "12:00 AM";
+        const currentDateTime = `${currentDate} ${currentTime}`;
+        const utcTimeStamp = moment(currentDateTime, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const fromUtcTime = moment(`${fromStartDate} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
         this.state = {
             submit: false,
             bankID: null,
@@ -67,8 +86,16 @@ class EmergencyDetails extends Component{
             cityError: true,
             fromDate: '',
             fromDateError: true,
+            fromTimeStamp: moment().valueOf(),
+            fromTime: '12:00 AM',
+            fromMinDate: fromUtcTime,
+            showFromDatePicker: false,
             toDate: '',
             toDateError: true,
+            toTimeStamp: moment().valueOf(),
+            toTime: '11:59 PM',
+            toMinDate: fromUtcTime,
+            showToDatePicker: false,
             stdCode: '',
             stdCodeError: true,
             landline: '',
@@ -105,12 +132,15 @@ class EmergencyDetails extends Component{
             fullnFinal: false,
             ddDate: '',
             ddDateError: true,
+            ddTimeStamp: moment().valueOf(),
+            ddMinDate: utcTimeStamp,
             ddNumber: '',
             ddNumberError: true,
             amount: '',
             amountError: true,
             ddCopy: '',
             ddCopyError: true,
+            showDDPicker: false,
             noError: function(){
                 return (
                     this.nameError === false && this.mobileError === false && this.relationError === false &&
@@ -209,6 +239,7 @@ class EmergencyDetails extends Component{
         })
         if(apiData.sectionData.oldData.hasOwnProperty('employment_history')){
             const empHistoryDetail = apiData.sectionData.oldData.employment_history[0];
+            console.log("@#@#@ EMP HISTORY: ", JSON.stringify(empHistoryDetail, null, 4));
             this.setState({
                 fromDate: empHistoryDetail.from_date, fromDateError: false, toDate: empHistoryDetail.to_date, toDateError: false, companyName: empHistoryDetail.organization_name,
                 showHistory: true, companyNameError: false, stdCode: empHistoryDetail.std_code, stdCodeError: false, landline: empHistoryDetail.landline_number, landlineError: false,
@@ -219,11 +250,25 @@ class EmergencyDetails extends Component{
                 fullnFinal: (empHistoryDetail.department === null || empHistoryDetail.department === "null")? false : true, experienceError: false,
                 uploadedExperience: empHistoryDetail.experience_certificate
             }, () => {
-                const {fullnFinal} = this.state;
+                const {fullnFinal, personDesignation} = this.state;
                 if(fullnFinal){
+                    const apiData = JSON.parse(this.props.route.params.apiData); 
+                    let departmentList = [];
+                    departmentList = Array.isArray(apiData.sectionData.dropdown.departments) && apiData.sectionData.dropdown.departments.map((item) => {
+                        return {...item, id: `${item.id}`};
+                    });
+                    let designationList = [];
+                    designationList = Array.isArray(apiData.sectionData.dropdown.designations) && apiData.sectionData.dropdown.designations.map((item) => {
+                        return {...item, id: `${item.id}`};
+                    });
+                    const departmentDetail = departmentList.find((item) => item.name.trim() === empHistoryDetail.department.trim());
+                    const reportingPersonDeignation = designationList.find((item) => item.name.trim() === personDesignation.trim());
+                    const designationDetail = designationList.find((item) => item.name.trim() === empHistoryDetail.designation.trim());
+                    console.log("!!!! DEPARTMENT DETAIL: ", departmentDetail);
                     this.setState({
-                        myDepartment: empHistoryDetail.department, myDepartmentError: false,
-                        myDesignation: empHistoryDetail.designation, myDesignationError: false
+                        myDepartment: empHistoryDetail.department, myDepartmentID: departmentDetail?.id, myDepartmentError: false,
+                        myDesignation: empHistoryDetail.designation, myDesignationID: designationDetail?.id, myDesignationError: false,
+                        personDesignationID: reportingPersonDeignation?.id
                     })
                 }
             })
@@ -407,7 +452,6 @@ class EmergencyDetails extends Component{
             }, () => {});
             return;
         }
-        console.log("@@@ AFTER");
         if(address === 'permanent'){
             addressDetails = apiData.sectionData.dropdown.permanent;
         }
@@ -418,7 +462,10 @@ class EmergencyDetails extends Component{
             house: addressDetails.house_number, houseError: false, pincode: addressDetails.pincode, pincodeError: false, road: addressDetails.road, roadError: false, 
             locality: addressDetails.locality, localityError: false, countryID: addressDetails.country_id, countryName: addressDetails.country, countryError: false, 
             stateID: addressDetails.state_id, stateName: addressDetails.state, stateError: false, cityID: addressDetails.city_id, cityName: addressDetails.city, cityError: false
+        }, () => {
+            this.cities(this.state.stateID)
         })
+        console.log("@@@ AFTER: ", addressDetails);
     }
 
     onSubmit(){
@@ -562,25 +609,41 @@ class EmergencyDetails extends Component{
                 bank_name: this.state.bankID,
                 bank: this.state.bankName,
                 dd_amount: this.state.amount,
-                dd_copy: this.state.ddCopy
+                dd_copy: this.state.ddCopy[0]
             }
             const securityList = Object.keys(securityData);
             securityList.forEach((name) => {
-                sendData.append(`security[${name}]`, securityData[name])
+                // if(name === 'dd_copy'){
+                //     const attachments = securityData[name];
+                //     if(attachments.length > 0){
+                //         attachments.forEach((content) => {
+                //             sendData.append(`security[${name}][]`, content);
+                //         })
+                //     }
+                // }else {
+                //     sendData.append(`security[${name}]`, securityData[name]);
+                // }
+                sendData.append(`security[${name}]`, securityData[name]);
             })
+            console.log("***** EMP SECURITY LIST: ", apiData.sectionData.oldData);
             if(apiData.sectionData.oldData && apiData.sectionData.oldData.hasOwnProperty('security')){
-                const ddAttachment = apiData.sectionData.oldData.security.dd_copy;
-                if(ddAttachment !== 'null' || ddAttachment !== null || ddAttachment !== ''){
-                    sendData.append(`security[dd_copy_old_filename]`, ddAttachment)
+                // const ddAttachment = apiData.sectionData.oldData.security.dd_copy;
+                // if(ddAttachment !== 'null' || ddAttachment !== null || ddAttachment !== ''){
+                //     sendData.append(`security[dd_copy_old_filename][]`, ddAttachment)
+                // }
+                const oldDD = apiData.sectionData.oldData.security.dd_copy;
+                if(oldDD.length !== 'null' || oldDD !== null || oldDD !== ''){
+                    sendData.append(`security[dd_copy_old_filename][]`, oldDD);
                 }
             }
         }
-        console.log("SEND DATA: ", sendData);
+        console.log("^^**$$ SEND DATA: ", JSON.stringify(sendData, null, 4));
         axios.post(`${baseURL}/onboarding/submit-onboarding`,
         sendData,
         {
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${secretToken}`
             }
         }).then((response) => {
@@ -595,12 +658,13 @@ class EmergencyDetails extends Component{
             }
         }).catch((error) => {
             this.hideLoader();
-            console.log("%%% ERROR: ", error)
+            // console.log("%%% ERROR: ", error)
             if(error.response){
                 const status = error.response.status;
-                console.log("%%% ERROR2: ", error.response)
+                console.log("%%% ERROR2: ", JSON.stringify(error.response, null, 4))
                 Alert.alert("ERROR", `Error Code: ${status}606`);
             }else{
+                console.log("^^^^^ ERROR: ", JSON.stringify(error, null, 4))
                 alert(`${error}, API CODE: 606`)
             }
         })
@@ -634,7 +698,9 @@ class EmergencyDetails extends Component{
             this.hideLoader();
             //console.log("@@@ STATE WISE CITIES: ", (response.data))
             const responseJson = response.data;
-            this.setState({cityList: responseJson.data})
+            this.setState({cityList: responseJson.data.map((item) => {
+                return {...item, id: `${item.id}`}
+            })}, () => {})
             
         }).catch((error) => {
             this.hideLoader();
@@ -668,7 +734,7 @@ class EmergencyDetails extends Component{
                 const res = await DocumentPicker.pick({
                     type: [DocumentPicker.types.pdf],
                 })
-                if(res.size > mb1){
+                if(res[0].size > mb1){
                     alert(`File size is too large, recommended size is 1MB.`)
                 }else{
                     this.setState({ddCopy: res, ddCopyError: false}, () => {
@@ -718,21 +784,49 @@ class EmergencyDetails extends Component{
             myDepartment, myDepartmentID, myDepartmentError, myDesignation, myDesignationID, myDesignationError, fullnFinal, secretToken,
             ddDate, ddDateError, ddNumber, ddNumberError, amount, amountError, experienceCertificate, experienceError, ddCopy, ddCopyError,
             screens, showScreensList, baseURL, loading, cityList, checkEmpHistory, checkSecurity, uploadedExperience, viewAttachments,
-            downloadModal, percent, fullFileName, checkFile, fileSize, downloadFileName, showHistory, showSecurityDetails
+            downloadModal, percent, fullFileName, checkFile, fileSize, downloadFileName, showHistory, showSecurityDetails,
+            ddTimeStamp, ddMinDate, showDDPicker, fromMinDate, fromTimeStamp, toTimeStamp, showFromDatePicker, showToDatePicker
         } = this.state;
         const apiData = JSON.parse(this.props.route.params.apiData); 
-        const relationList = apiData.sectionData.dropdown.relations;
-        const countryList = apiData.sectionData.dropdown.countries;
-        const stateList = apiData.sectionData.dropdown.states;
-        const departmentList = apiData.sectionData.dropdown.departments;
-        const designationList = apiData.sectionData.dropdown.designations;
-        const bankList = apiData.sectionData.dropdown.banks;
+        // const relationList = apiData.sectionData.dropdown.relations;
+        let relationList = [];
+        relationList = Array.isArray(apiData.sectionData.dropdown.relations) && apiData.sectionData.dropdown.relations.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        let countryList = [];
+        countryList = Array.isArray(apiData.sectionData.dropdown.countries) && apiData.sectionData.dropdown.countries.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        let stateList = [];
+        stateList = Array.isArray(apiData.sectionData.dropdown.states) && apiData.sectionData.dropdown.states.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        // const stateList = apiData.sectionData.dropdown.states;
+        let departmentList = [];
+        departmentList = Array.isArray(apiData.sectionData.dropdown.departments) && apiData.sectionData.dropdown.departments.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        // const departmentList = apiData.sectionData.dropdown.departments;
+        let designationList = [];
+        designationList = Array.isArray(apiData.sectionData.dropdown.designations) && apiData.sectionData.dropdown.designations.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        // const designationList = apiData.sectionData.dropdown.designations;
+        let bankList = [];
+        bankList = Array.isArray(apiData.sectionData.dropdown.banks) && apiData.sectionData.dropdown.banks.map((item) => {
+            return {...item, id: `${item.id}`};
+        });
+        // const bankList = apiData.sectionData.dropdown.banks;
+        const todaysDate = `${moment().format("YYYY-MM-DD")} 12:00AM`
+        // console.log("@@@@ FROM DATE: ", fromMaxDate, todaysDate);
         const projectName = apiData.projectName;
         const designation = apiData.designationName;
         const currentYear = moment().year();
         const maxDate = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
-        const ddMinDate = `${currentYear - 1}-${moment().month() + 1}-${moment().date()}`;
-        const ddMaxDate = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
+        const ddMax = `${currentYear}-${moment().month() + 1}-${moment().date()}`;
+        const fromMaxDate = moment(todaysDate, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const toMinDate = moment(`${fromDate} 11:59 PM`, "YYYY-MM-DD hh:mm A").utc().toDate();
+        const ddMaxDate = moment(`${ddMax} 12:00 AM`, "YYYY-MM-DD hh:mm A").utc().toDate();
         let securityDetails = null;
         if(apiData.sectionData.oldData && apiData.sectionData.oldData.hasOwnProperty('security')){
             securityDetails = apiData.sectionData.oldData.security;
@@ -765,7 +859,7 @@ class EmergencyDetails extends Component{
                                     alignItems: 'center', backgroundColor: 'white', shadowOpacity: 0.4, shadowColor: '#000000', shadowRadius: 2, elevation: 2, borderColor: 'red',
                                     borderWidth: 0, shadowOffset: {width: 0, height: 0}, flex: 1, ...Platform.select({android: getMarginVertical(2), ios: getMarginTop(2)})}]}> 
                                     <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" style={[{flex: 1}, getMarginVertical(1), getWidthnHeight(93)]}>
-                                        <View style={{flex: 1, alignItems: 'center', zIndex: 1}}>
+                                        <View style={{flex: 1, alignItems: 'center'}}>
                                             <View style={[{alignSelf: 'flex-start'}, getMarginLeft(3)]}>
                                                 <MaskedGradientText
                                                     title={"EMERGENCY CONTACT DETAILS"}
@@ -778,7 +872,8 @@ class EmergencyDetails extends Component{
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <View>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Name "
+                                                        placeholder="Name"
+                                                        mandatory={true}
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={name}
                                                         slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -808,7 +903,8 @@ class EmergencyDetails extends Component{
                                                 </View>
                                                 <View style={[getMarginTop(2)]}>
                                                     <AnimatedTextInput 
-                                                        placeholder=" Mobile Number "
+                                                        placeholder="Mobile Number"
+                                                        mandatory={true}
                                                         placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                         value={mobile}
                                                         keyboardType={'numeric'}
@@ -846,10 +942,10 @@ class EmergencyDetails extends Component{
                                                         borderColor: (submit && relationError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                         borderStyle: (submit && relationError)? 'dashed' : 'solid', borderWidth: (submit && relationError)? 2 : 1,
                                                     }, getWidthnHeight(87, 6.5)]}>
-                                                        <Dropdown
+                                                        {/* <Dropdown
                                                             containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                             inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
-                                                            label={'Relation with Employee'}
+                                                            label={'Relation with Employee*'}
                                                             labelFontSize={fontSizeH4().fontSize - 3}
                                                             labelTextStyle={[getMarginLeft(1.5), getMarginTop(0)]}
                                                             data={relationList}
@@ -865,6 +961,25 @@ class EmergencyDetails extends Component{
                                                             baseColor = {(relation)? colorTitle : '#C4C4C4'}
                                                             //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                             fontSize = {(relation)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                        /> */}
+                                                        <Dropdown
+                                                            style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getMarginTop(0)]}
+                                                            containerStyle={[{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}, getWidthnHeight(87)]}
+                                                            inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                            placeholder='Relation with Employee*'
+                                                            placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                            selectedTextStyle={[getMarginLeft(3)]}
+                                                            data={relationList}
+                                                            valueField={'id'}
+                                                            labelField={'name'}
+                                                            onChange={(item) => {
+                                                                console.log(item);
+                                                                this.setState({
+                                                                    relation: item.name, relationID: item.id, relationError: false 
+                                                                }, () => console.log("### BANK ID: ", this.state.bankID))
+                                                                this.dismissKeyboard();
+                                                            }}
+                                                            value={relationID}
                                                         />
                                                     </View>
                                                 </View>
@@ -930,7 +1045,8 @@ class EmergencyDetails extends Component{
                                             </View>
                                             <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getWidthnHeight(87), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" House Number "
+                                                    placeholder="House Number"
+                                                    mandatory={true}
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={house}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -957,7 +1073,8 @@ class EmergencyDetails extends Component{
                                                     style={[{borderColor: 'red', borderWidth: 0, borderRadius: 0, fontSize: (fontSizeH4().fontSize + 2)}, getWidthnHeight(52, 6.5), getMarginHorizontal(2)]}
                                                 />
                                                 <AnimatedTextInput 
-                                                    placeholder=" Pincode "
+                                                    placeholder="Pincode"
+                                                    mandatory={true}
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={pincode}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -987,7 +1104,8 @@ class EmergencyDetails extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Road/Street "
+                                                    placeholder="Road/Street"
+                                                    mandatory={true}
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={road}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1016,7 +1134,8 @@ class EmergencyDetails extends Component{
                                             </View>
                                             <View style={[{alignItems: 'center'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                 <AnimatedTextInput 
-                                                    placeholder=" Locality/Area "
+                                                    placeholder="Locality/Area"
+                                                    mandatory={true}
                                                     placeholderColor={['#C4C4C4', '#0B8EE8']}
                                                     value={locality}
                                                     slideVertical={[0, getWidthnHeight(undefined, -3.3).height]}
@@ -1044,7 +1163,7 @@ class EmergencyDetails extends Component{
                                                 />
                                             </View>
                                             <View style={[{alignItems: 'flex-end'}, getWidthnHeight(93)]}>
-                                                <Dropdown
+                                                {/* <Dropdown
                                                     containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(1.5)]}
                                                     inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(20), getMarginTop(-2)]}
                                                     labelFontSize={fontSizeH4().fontSize - 3}
@@ -1062,13 +1181,32 @@ class EmergencyDetails extends Component{
                                                     baseColor = {(countryName)? colorTitle : '#C4C4C4'}
                                                     //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                     fontSize = {(countryName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                /> */}
+                                                <Dropdown
+                                                    style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(20, 4), getMarginRight(3)]}
+                                                    containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getMarginTop(0)]}
+                                                    placeholder='Select Country*'
+                                                    placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                    selectedTextStyle={[getMarginLeft(3)]}
+                                                    data={countryList}
+                                                    valueField={'id'}
+                                                    labelField={'name'}
+                                                    onChange={(item) => {
+                                                        console.log(item);
+                                                        this.setState({
+                                                            countryName: item.name, countryID: item.id, countryError: false 
+                                                        }, () => console.log("### COUNTRY ID: ", this.state.countryID))
+                                                        this.dismissKeyboard();
+                                                    }}
+                                                    value={countryID}
                                                 />
                                             </View>
                                             <View 
                                                 style={[{
-                                                    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', ...Platform.select({ios: {zIndex: 39}})
+                                                    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'
                                             }, getMarginTop(0), getWidthnHeight(90)]}>
-                                                <SearchableDropDown 
+                                                {/* <SearchableDropDown 
                                                     placeholder=" State* "
                                                     data={stateList}
                                                     value={stateName}
@@ -1091,8 +1229,34 @@ class EmergencyDetails extends Component{
                                                             this.cities(this.state.stateID);
                                                         })
                                                     }}
-                                                />
-                                                <SearchableDropDown 
+                                                /> */}
+                                                <View style={[{
+                                                    borderColor: (submit && stateError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                    borderStyle: (submit && stateError)? 'dashed' : 'solid', borderWidth: (submit && stateError)? 2 : 1
+                                                }, getWidthnHeight(42, 6.5)]}>
+                                                    <Dropdown
+                                                        search
+                                                        searchPlaceholder="Search..."
+                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                        placeholder={'State*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                        data={stateList}
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            console.log(item);
+                                                            this.setState({
+                                                                stateName: item.name, stateID: item.id, stateError: false,
+                                                                cityList: [], cityID: null, cityError: true 
+                                                            }, () => this.cities(this.state.stateID));
+                                                            this.dismissKeyboard();
+                                                        }}
+                                                        value={stateID}
+                                                    />
+                                                </View>
+                                                {/* <SearchableDropDown 
                                                     placeholder=" City* "
                                                     data={cityList}
                                                     value={cityName}
@@ -1112,7 +1276,32 @@ class EmergencyDetails extends Component{
                                                         this.setState({cityID: id, cityName: name, cityError: false}, () => {
                                                         })
                                                     }}
-                                                />
+                                                /> */}
+                                                <View style={[{
+                                                    borderColor: (submit && cityError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
+                                                    borderStyle: (submit && cityError)? 'dashed' : 'solid', borderWidth: (submit && cityError)? 2 : 1,
+                                                }, getWidthnHeight(42, 6.5)]}>
+                                                    <Dropdown
+                                                        search
+                                                        searchPlaceholder="Search..."
+                                                        containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(42)]}
+                                                        inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(42)]}
+                                                        placeholder={'City*'}
+                                                        placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                        selectedTextStyle={[getMarginLeft(3)]}
+                                                        data={cityList}
+                                                        valueField={'id'}
+                                                        labelField={'name'}
+                                                        onChange={(item) => {
+                                                            console.log(item);
+                                                            this.setState({
+                                                                cityName: item.name, cityID: item.id, cityError: false 
+                                                            });
+                                                            this.dismissKeyboard();
+                                                        }}
+                                                        value={cityID}
+                                                    />
+                                                </View>
                                             </View>
                                             <View style={[{backgroundColor: 'rgba(196, 196, 196, 0.5)', height: 1}, getWidthnHeight(87), getMarginTop(3)]}/>
                                             <View style={[{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, getMarginTop(2), getWidthnHeight(87)]}>
@@ -1150,7 +1339,7 @@ class EmergencyDetails extends Component{
                                             {(showHistory) &&
                                                 <>
                                                     <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
-                                                        <View style={[{alignItems: 'center'}, getWidthnHeight(42)]}>
+                                                        {/* <View style={[{alignItems: 'center'}, getWidthnHeight(42)]}>
                                                             <AnimateDateLabel
                                                                 containerColor={[(checkEmpHistory && fromDateError)? 'red' : '#C4C4C4', (checkEmpHistory && fromDateError)? 'red' : '#C4C4C4']}
                                                                 containerBorderWidth={[(checkEmpHistory && fromDateError)? 2 : 1, 1]}
@@ -1183,8 +1372,52 @@ class EmergencyDetails extends Component{
                                                                     }
                                                                 }}
                                                             />
+                                                        </View> */}
+                                                        <View style={[{borderColor: 'red', borderWidth: 0}, getWidthnHeight(42, 6)]}>
+                                                            <TouchableOpacity 
+                                                                onPress={() => this.setState({showFromDatePicker: !showFromDatePicker})}
+                                                            >
+                                                                <View 
+                                                                    style={[{
+                                                                        alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                        borderColor: (checkEmpHistory && fromDateError)? 'red' : '#C4C4C4',
+                                                                        borderWidth: (checkEmpHistory && fromDateError)? 2 : 1,
+                                                                        borderStyle: (checkEmpHistory && fromDateError)? 'dashed' : 'solid'
+                                                                    }, getWidthnHeight(42, 6.5)]}>
+                                                                    <Text style={[{color: fromDate? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{fromDate || 'Select Date'}</Text>
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                            {(showFromDatePicker) && (
+                                                                <DateTimePicker 
+                                                                    styleBox={{flex: 1}}
+                                                                    date={moment(fromTimeStamp).utc().toDate()}
+                                                                    androidMode='default'
+                                                                    mode='date'
+                                                                    is24Hour={false}
+                                                                    placeholder='Select Date'
+                                                                    format='YYYY-MM-DD'
+                                                                    minDate={fromMinDate}
+                                                                    maxDate={fromMaxDate}
+                                                                    onDateChange={(event, newDate) => {
+                                                                        if(event.type === "dismissed"){
+                                                                            this.setState({showFromDatePicker: !showFromDatePicker})
+                                                                            return;
+                                                                        }
+                                                                        this.setState({showFromDatePicker: !showFromDatePicker})
+                                                                        const fromTimeStamp = event.nativeEvent.timestamp;
+                                                                        this.setState({
+                                                                            fromDate: moment(newDate).format("YYYY-MM-DD"), fromTimeStamp,
+                                                                            showToDatePicker: false, fromDateError: false,
+                                                                        });
+                                                                        Keyboard.dismiss();
+                                                                    }} 
+                                                                />
+                                                            )}
+                                                            <View style={styles.forDate}>
+                                                                <Text style={[{fontSize: (fontSizeH4().fontSize - 3), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>From Date</Text>
+                                                            </View>
                                                         </View>
-                                                        <View style={[{alignItems: 'center'}, getWidthnHeight(42)]}>
+                                                        {/* <View style={[{alignItems: 'center'}, getWidthnHeight(42)]}>
                                                             <AnimateDateLabel
                                                                 containerColor={[(checkEmpHistory && toDateError)? 'red' : '#C4C4C4', (checkEmpHistory && toDateError)? 'red' : '#C4C4C4']}
                                                                 containerBorderWidth={[(checkEmpHistory && toDateError)? 2 : 1, 1]}
@@ -1220,6 +1453,53 @@ class EmergencyDetails extends Component{
                                                                     }
                                                                 }}
                                                             />
+                                                        </View> */}
+                                                        <View style={[getWidthnHeight(42, 6.5)]}>
+                                                            <TouchableOpacity 
+                                                                disabled={(fromDateError)? true : false}
+                                                                onPress={() => this.setState({showToDatePicker: !showToDatePicker})}
+                                                            >
+                                                                <View 
+                                                                    style={[{
+                                                                        alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                        borderColor: (checkEmpHistory && toDateError)? 'red' : '#C4C4C4',
+                                                                        borderWidth: (checkEmpHistory && toDateError)? 2 : 1,
+                                                                        borderStyle: (checkEmpHistory && toDateError)? 'dashed' : 'solid'
+                                                                    }, getWidthnHeight(42, 6.5)]}>
+                                                                    <Text style={[{color: toDate? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{toDate || 'Select Date'}</Text>
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                            {(showToDatePicker) && (
+                                                                <DateTimePicker 
+                                                                    styleBox={{flex: 1}}
+                                                                    date={moment(toTimeStamp).utc().toDate()}
+                                                                    // disabled={(fromDateError)? true : false}
+                                                                    androidMode='default'
+                                                                    mode='date'
+                                                                    is24Hour={false}
+                                                                    placeholder='Select Date'
+                                                                    format='YYYY-MM-DD'
+                                                                    minDate={toMinDate}
+                                                                    maxDate={fromMaxDate}
+                                                                    onDateChange={(event, newDate) => {
+                                                                        Keyboard.dismiss()
+                                                                        if(event.type === "dismissed"){
+                                                                            this.setState({showToDatePicker: !showToDatePicker})
+                                                                            return;
+                                                                        }
+                                                                        this.setState({showToDatePicker: !showToDatePicker});
+                                                                        const toTimeStamp = event.nativeEvent.timestamp;
+                                                                        //console.log('### To Date: ', moment(newDate).format("YYYY-MM-DD"))
+                                                                        this.setState({
+                                                                            toDate: moment(newDate).format("YYYY-MM-DD"), toTimeStamp,
+                                                                            toDateError: false
+                                                                        });
+                                                                    }} 
+                                                                />
+                                                            )}
+                                                            <View style={styles.forDate}>
+                                                                <Text style={[{fontSize: (fontSizeH4().fontSize - 4), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>To Date</Text>
+                                                            </View>
                                                         </View>
                                                     </View>
                                                     <View style={[getMarginTop(2)]}>
@@ -1408,7 +1688,7 @@ class EmergencyDetails extends Component{
                                                             borderColor: (checkEmpHistory && personDesignationError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                             borderStyle: (checkEmpHistory && personDesignationError)? 'dashed' : 'solid', borderWidth: (checkEmpHistory && personDesignationError)? 2 : 1,
                                                         }, getWidthnHeight(87, 6.5)]}>
-                                                            <Dropdown
+                                                            {/* <Dropdown
                                                                 containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                                 inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
                                                                 label={'Reporting Person Designation'}
@@ -1427,6 +1707,28 @@ class EmergencyDetails extends Component{
                                                                 baseColor = {(personDesignation)? colorTitle : '#C4C4C4'}
                                                                 //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                 fontSize = {(personDesignation)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                            /> */}
+                                                            <Dropdown
+                                                                search
+                                                                searchPlaceholder="Search..."
+                                                                style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(87), getMarginRight(-1)]}
+                                                                containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                                inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
+                                                                placeholder='Reporting Person Designation'
+                                                                placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                selectedTextStyle={[getMarginLeft(3)]}
+                                                                data={designationList}
+                                                                // iconStyle={{paddingRight: 20}}
+                                                                valueField={'id'}
+                                                                labelField={'name'}
+                                                                onChange={(item) => {
+                                                                    console.log(item);
+                                                                    this.setState({
+                                                                        personDesignation: item.name, personDesignationID: item.id, personDesignationError: false 
+                                                                    }, () => console.log("### DESIGNATION ID: ", this.state.personDesignationID))
+                                                                    this.dismissKeyboard();
+                                                                }}
+                                                                value={personDesignationID}
                                                             />
                                                         </View>
                                                     </View>
@@ -1610,14 +1912,13 @@ class EmergencyDetails extends Component{
                                                             />
                                                         </View>
                                                     </View>
-                                                    {(fullnFinal) &&
                                                     <View>
                                                         <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
                                                             <View style={[{
                                                                 borderColor: (checkEmpHistory && myDepartmentError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                                 borderStyle: (checkEmpHistory && myDepartmentError)? 'dashed' : 'solid', borderWidth: (checkEmpHistory && myDepartmentError)? 2 : 1,
                                                             }, getWidthnHeight(87, 6.5)]}>
-                                                                <Dropdown
+                                                                {/* <Dropdown
                                                                     containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                                     inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
                                                                     label={'Department'}
@@ -1636,6 +1937,28 @@ class EmergencyDetails extends Component{
                                                                     baseColor = {(myDepartment)? colorTitle : '#C4C4C4'}
                                                                     //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                     fontSize = {(myDepartment)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                /> */}
+                                                                <Dropdown
+                                                                    search
+                                                                    searchPlaceholder="Search..."
+                                                                    style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(87), getMarginRight(-1)]}
+                                                                    containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
+                                                                    placeholder='Department'
+                                                                    placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                    selectedTextStyle={[getMarginLeft(3)]}
+                                                                    data={departmentList}
+                                                                    // iconStyle={{paddingRight: 20}}
+                                                                    valueField={'id'}
+                                                                    labelField={'name'}
+                                                                    onChange={(item) => {
+                                                                        console.log(item);
+                                                                        this.setState({
+                                                                            myDepartment: item.name, myDepartmentID: item.id, myDepartmentError: false 
+                                                                        }, () => console.log("### DEPARTMENT ID: ", this.state.myDepartmentID))
+                                                                        this.dismissKeyboard();
+                                                                    }}
+                                                                    value={myDepartmentID}
                                                                 />
                                                             </View>
                                                         </View>
@@ -1644,7 +1967,7 @@ class EmergencyDetails extends Component{
                                                                 borderColor: (checkEmpHistory && myDesignationError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                                 borderStyle: (checkEmpHistory && myDesignationError)? 'dashed' : 'solid', borderWidth: (checkEmpHistory && myDesignationError)? 2 : 1,
                                                             }, getWidthnHeight(87, 6.5)]}>
-                                                                <Dropdown
+                                                                {/* <Dropdown
                                                                     containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                                     inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
                                                                     label={'Designation'}
@@ -1663,11 +1986,32 @@ class EmergencyDetails extends Component{
                                                                     baseColor = {(myDesignation)? colorTitle : '#C4C4C4'}
                                                                     //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                     fontSize = {(myDesignation)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                                /> */}
+                                                                <Dropdown
+                                                                    search
+                                                                    searchPlaceholder="Search..."
+                                                                    style={[{borderColor: '#C4C4C4', borderWidth: 0, justifyContent: 'center'}, getWidthnHeight(87), getMarginRight(-1)]}
+                                                                    containerStyle={{marginHorizontal: getMarginHorizontal(3).marginHorizontal, width: '100%'}}
+                                                                    inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
+                                                                    placeholder='Designation'
+                                                                    placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingHorizontal: getWidthnHeight(3).width}}
+                                                                    selectedTextStyle={[getMarginLeft(3)]}
+                                                                    data={designationList}
+                                                                    // iconStyle={{paddingRight: 20}}
+                                                                    valueField={'id'}
+                                                                    labelField={'name'}
+                                                                    onChange={(item) => {
+                                                                        console.log(item);
+                                                                        this.setState({
+                                                                            myDesignation: item.name, myDesignationID: item.id, myDesignationError: false 
+                                                                        }, () => console.log("### DESIGNATION ID: ", this.state.myDesignationID))
+                                                                        this.dismissKeyboard();
+                                                                    }}
+                                                                    value={myDesignationID}
                                                                 />
                                                             </View>
                                                         </View>
                                                     </View>
-                                                    }
                                                 </>
                                             }
                                             <View style={[{backgroundColor: 'rgba(196, 196, 196, 0.5)', height: 1}, getWidthnHeight(87), getMarginTop(3)]}/>
@@ -1707,8 +2051,8 @@ class EmergencyDetails extends Component{
                                             {(showSecurityDetails) &&
                                                 <>
                                                     <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}, getWidthnHeight(93), getMarginTop(2)]}>
-                                                        <View style={[{alignItems: 'center'}, getWidthnHeight(42)]}>
-                                                            <AnimateDateLabel
+                                                        <View style={[{alignItems: 'center'}, getWidthnHeight(42, 6)]}>
+                                                            {/* <AnimateDateLabel
                                                                 containerColor={[(checkSecurity && ddDateError)? 'red' : '#C4C4C4', (checkSecurity && ddDateError)? 'red' : '#C4C4C4']}
                                                                 containerBorderWidth={[(checkSecurity && ddDateError)? 2 : 1, 1]}
                                                                 containerStyle={[{
@@ -1727,7 +2071,47 @@ class EmergencyDetails extends Component{
                                                                 onDateChange={(date) => {this.setState({ddDate: date, ddDateError: false}, () => {
                                                                     Keyboard.dismiss();
                                                                 })}}
-                                                            />
+                                                            /> */}
+                                                            <TouchableOpacity 
+                                                                onPress={() => this.setState({showDDPicker: !showDDPicker})}
+                                                            >
+                                                                <View 
+                                                                    style={[{
+                                                                        alignItems: 'center', justifyContent: 'center', borderRadius: 5, 
+                                                                        borderColor: '#C4C4C4', borderWidth: 1
+                                                                    }, getWidthnHeight(42, 6.5)]}>
+                                                                    <Text style={[{color: ddDate? '#000000' : '#C4C4C4', fontSize: (fontSizeH4().fontSize + 2)}]}>{ddDate || 'DD Date'}</Text>
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                            {(showDDPicker) && (
+                                                                <DateTimePicker 
+                                                                    styleBox={{flex: 1}}
+                                                                    date={moment(ddTimeStamp).utc().toDate()}
+                                                                    androidMode='default'
+                                                                    mode='date'
+                                                                    is24Hour={false}
+                                                                    placeholder='DD Date'
+                                                                    format='YYYY-MM-DD'
+                                                                    minDate={ddMinDate}
+                                                                    maxDate={ddMaxDate}
+                                                                    onDateChange={(event, newDate) => {
+                                                                        if(event.type === "dismissed"){
+                                                                            this.setState({showDDPicker: !showDDPicker})
+                                                                            return;
+                                                                        }
+                                                                        this.setState({showDDPicker: !showDDPicker})
+                                                                        const ddTimeStamp = event.nativeEvent.timestamp;
+                                                                        this.setState({
+                                                                            ddDate: moment(newDate).format("YYYY-MM-DD"), ddTimeStamp,
+                                                                            ddDateError: false
+                                                                        });
+                                                                        Keyboard.dismiss();
+                                                                    }} 
+                                                                />
+                                                            )}
+                                                            <View style={styles.forDate}>
+                                                                <Text style={[{fontSize: (fontSizeH4().fontSize - 4), color: '#0B8EE8', fontWeight: 'normal', textAlign: 'center'}, styles.boldFont]}>From Date</Text>
+                                                            </View>
                                                         </View>
                                                         <View>
                                                             <AnimatedTextInput 
@@ -1765,7 +2149,7 @@ class EmergencyDetails extends Component{
                                                             borderColor: (checkSecurity && bankError)? 'red' : '#C4C4C4', justifyContent: 'center', borderRadius: getWidthnHeight(1).width,
                                                             borderStyle: (checkSecurity && bankError)? 'dashed' : 'solid', borderWidth: (checkSecurity && bankError)? 2 : 1,
                                                         }, getWidthnHeight(87, 6.5)]}>
-                                                            <Dropdown
+                                                            {/* <Dropdown
                                                                 containerStyle={[{textOverflow:'hidden', borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
                                                                 inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
                                                                 label={'Bank Name'}
@@ -1784,6 +2168,25 @@ class EmergencyDetails extends Component{
                                                                 baseColor = {(bankName)? colorTitle : '#C4C4C4'}
                                                                 //pickerStyle={[getMarginLeft(4), getWidthnHeight(42), getMarginTop(10)]}
                                                                 fontSize = {(bankName)? fontSizeH4().fontSize + 2 : fontSizeH4().fontSize}
+                                                            /> */}
+                                                            <Dropdown
+                                                                search
+                                                                searchPlaceholder="Search..."
+                                                                containerStyle={[{borderColor: '#C4C4C4', borderWidth: 0}, getWidthnHeight(87), getMarginTop(-1)]}
+                                                                inputContainerStyle={[{borderBottomWidth: 0, borderBottomColor: '#C4C4C4', paddingHorizontal: 5 }, getWidthnHeight(87)]}
+                                                                placeholder={'Bank Name*'}
+                                                                placeholderStyle={{color: '#C4C4C4', fontSize: fontSizeH4().fontSize, paddingLeft: getWidthnHeight(3).width}}
+                                                                selectedTextStyle={[getMarginLeft(3)]}
+                                                                data={bankList}
+                                                                valueField={'id'}
+                                                                labelField={'name'}
+                                                                onChange={(item) => {
+                                                                    this.setState({
+                                                                        bankName: item.name, bankID: item.id, bankError: false 
+                                                                    }, () => console.log("### BANK ID: ", this.state.bankID))
+                                                                    this.dismissKeyboard();
+                                                                }}
+                                                                value={bankID}
                                                             />
                                                         </View>
                                                     </View>
@@ -1988,7 +2391,20 @@ const styles = StyleSheet.create({
         elevation: 10,
         borderColor: 'red',
         borderWidth: 0
-    }
+    },
+    forDate: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        justifyContent: 'center', 
+        //alignSelf: 'center', 
+        borderColor: 'black', 
+        borderWidth: 0, 
+        marginTop: getMarginTop(-1).marginTop, 
+        width: 50, 
+        height: 16,
+        marginLeft: 10,
+        left: 0
+    },
 })
 
 export default EmergencyDetails;

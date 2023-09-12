@@ -11,7 +11,7 @@ import { extractBaseURL } from '../api/BaseURL';
 import {
     CommonModal, IOS_StatusBar, WaveHeader, statusBarGradient, 
     DateTimePicker, fontSizeH4, getWidthnHeight, getMarginTop
-} from '../KulbirComponents/common';
+} from '../NewComponents/common';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 export default class Leaves extends Component {

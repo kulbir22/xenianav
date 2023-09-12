@@ -18,7 +18,7 @@ import MapView, {PROVIDER_GOOGLE, PROVIDER_DEFAULT} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Utils from '../Utils';
 import {extractBaseURL} from '../api/BaseURL';
-import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft, fontSizeH3, getMarginBottom} from '../KulbirComponents/common/';
+import {getWidthnHeight, CommonModal, IOS_StatusBar, WaveHeader, getMarginTop, Spinner, getMarginLeft, fontSizeH3, getMarginBottom} from '../NewComponents/common';
 import {cameraFile} from '../actions';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');

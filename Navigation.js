@@ -1,5 +1,7 @@
-import React from 'react';
-import {  Image } from 'react-native';
+import React, { useEffect } from 'react';
+import {  Image, LogBox, Linking, Platform } from 'react-native';
+import NativeIntentAndroid from 'react-native/Libraries/Linking/NativeIntentAndroid';
+import notifee, { EventType } from '@notifee/react-native';
 import { Provider, useSelector } from 'react-redux';
 import Gradient from 'react-native-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
@@ -67,7 +69,7 @@ import View_claim from './src/Manage-Travel/View-claim';
 
 import TicTacToe from './src/Games/Tictactoe';
 
-import StepCount from './src/Fitness/StepCount';
+import StepCount from './src/Fitness/StepCount.android';
 
 import HolidayList from './src/HolidayList';
 
@@ -93,7 +95,10 @@ import HTML from './src/test/html';
 
 import { store } from './src/store/redux/store';
 
-import { fontSizeH4, getMarginLeft, getMarginRight, getMarginTop, getWidthnHeight } from './src/KulbirComponents/common';
+import { fontSizeH4, getMarginLeft, getMarginRight, getMarginTop, getWidthnHeight } from './src/NewComponents/common';
+import { MapScreen } from './src/Fitness/MapScreen';
+
+LogBox.ignoreLogs(['Animated: `useNativeDriver` was not specified.'])
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -104,7 +109,23 @@ const COLOR2 = "#EA304F";
 
 const appProject = "Elite Workforce";
 
+const NativeLinking = Platform.OS === 'android' ? NativeIntentAndroid : Linking;
+
 export default function App(){
+
+    useEffect(() => {
+        const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+            switch (type) {
+                case EventType.DISMISSED:
+                    console.log('User dismissed notification', detail.notification);
+                    break;
+                case EventType.PRESS:
+                    console.log('User pressed notification', detail.notification);
+                    break;
+            }
+        });
+        return () => unsubscribe()
+    }, []);
 
     function DrawerComponent(){ 
         const { serverLabel } = useSelector((state) => state.reduxState);
@@ -301,7 +322,34 @@ export default function App(){
 
     function StepCountFunction(){
         return (
-            <Drawer.Screen options={{headerShown: true, headerTitleAlign: 'center'}} name="StepCount" component={StepCount}/>
+            <Drawer.Screen options={{headerShown: false}} name="StepCount" component={MapScreenComponent}/>
+        );
+    }
+
+    function MapScreenComponent(){
+        return (
+            <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='StepCountComponent'>
+                <Stack.Screen options={({navigation}) => ({
+                    headerShown: true, headerTitleAlign: 'center', title: 'Step Count',
+                    headerBackground: () => (
+                        <Gradient 
+                            start={{x: 0, y: 1}} end={{x: 1, y: 1.5}}
+                            colors={[COLOR1, COLOR2]}
+                            style={[{alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}]}
+                        />
+                    ),
+                    headerTintColor: 'white',
+                    // headerLeftContainerStyle: {alignItems: 'center', borderWidth: 1, borderColor: 'cyan'},
+                    headerLeft: () => (
+                        <Entypo 
+                            style={[{borderWidth: 0, borderColor: 'cyan'}, getMarginLeft(0)]} 
+                            name='menu' size={getWidthnHeight(12).width} 
+                            color='white' onPress={() => navigation.toggleDrawer()}
+                        />
+                    ),
+                })} name="StepCountComponent" component={StepCount}/>
+                <Stack.Screen options={{headerShown: false}} name="MapScreen" component={MapScreen}/>
+            </Stack.Navigator>
         );
     }
 
@@ -348,9 +396,10 @@ export default function App(){
             </Stack.Navigator>
         );
     }
-
+    
     function AuthenticatedStack() {
         const { serverLabel } = useSelector((state) => state.reduxState);
+        console.log("@#@#@ AUTHENTICATED STACK")
         return (
             <Stack.Navigator
                 screenOptions={{
@@ -360,7 +409,9 @@ export default function App(){
                 id='authNavigator'
             >
                 <Stack.Screen name="MainDrawer" component={DrawerComponent} />
+
                 <Stack.Screen name="camera" component={CameraScreen} />
+
                 <Stack.Group 
                     screenOptions={{
                         headerShown: true,
@@ -403,8 +454,9 @@ export default function App(){
                     <Stack.Screen name="taskOverViewComment" component={TaskOverViewComment} />
                     <Stack.Screen name="taskOverViewUpdate" component={TaskOverViewUpdate} />
                     <Stack.Screen name="taskOverViewHistory" component={TaskOverViewHistory} />
-                    
+
                 </Stack.Group>
+
             </Stack.Navigator>
         );
     }
@@ -449,9 +501,62 @@ export default function App(){
 
     function NavigationStack(){
         const { isLoggedIn } = useSelector((state) => state.reduxState);
-        // console.log("**&&** NAVIGATION: ", isLoggedIn)
+        const linking = {
+            prefixes: [
+                // your linking prefixes 
+                'xenia://'
+            ],
+            async getInitialURL() {
+                // let url = 'xenia://MapScreen';
+                // return new Promise((resolve, reject) => {
+                //     const timeout = setTimeout(() => {
+                //         resolve(null)
+                //     }, 2000)
+                //     NativeLinking.getInitialURL()
+                //         .then(url => {
+                //             console.log("^&^&^ CLOSED APP INITIAL URL: ", url);
+                //             // resolve(url)
+                //             return url;
+                //         })
+                //         .catch(err => {
+                //             console.log("^&^&^ CLOSED APP URL ERROR: ", err);
+                //             // reject(err)
+                //         })
+                //         .finally(() => {
+                //             console.log("^&^&^ CLOSED APP FINAL URL ");
+                //             // clearTimeout(timeout)
+                //         })
+                //     })
+                return NativeLinking.getInitialURL();
+            },
+            subscribe(listener){
+                const linkingSubscription = Linking.addEventListener('url', ({ url }) => {
+                    console.log("####@@@@ LINKING SUBSCRIPTION URL: ", url);
+                    listener(url);
+                });
+                return () => {
+                    // Clean up the event listeners
+                    linkingSubscription.remove();
+                };
+            },
+            config: {
+                // configuration for matching screens with paths 
+                screens: {
+                    MainDrawer: {
+                        screens: {
+                            StepCount: {
+                                screens: {
+                                    MapScreen: 'MapScreen'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        console.log("**&&** NAVIGATION: ", isLoggedIn)
         return (
-            <NavigationContainer>
+            <NavigationContainer linking={linking}>
                 {(isLoggedIn === null) && (
                     <AppLoadingStack />
                 )}
